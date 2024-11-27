@@ -1,18 +1,17 @@
-#ifndef __AOC_DAY_0__
-#define __AOC_DAY_0__
+#ifndef __AOC_DAY_7__
+#define __AOC_DAY_7__
 
 #include "aoc_day.h"
 
-class AocDay0 : public AocDay
+class AocDay7 : public AocDay
 {
     private:
-        vector<long> read_input(string filename);
+        vector<string> read_input(string filename);
     public:
-        AocDay0();
-        ~AocDay0();
+        AocDay7();
+        ~AocDay7();
         string part1(string filename, vector<string> extra_args);
         string part2(string filename, vector<string> extra_args);
 };
-
 
 #endif
