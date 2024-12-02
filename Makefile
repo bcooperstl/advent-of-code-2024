@@ -70,7 +70,7 @@ build/solutions/aoc_day_1.o: src/solutions/aoc_day_1.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_1.o -c src/solutions/aoc_day_1.cpp
 
-build/solutions/aoc_day_2.o: src/solutions/aoc_day_1.cpp  \
+build/solutions/aoc_day_2.o: src/solutions/aoc_day_2.cpp  \
 	include/solutions/aoc_day_2.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h

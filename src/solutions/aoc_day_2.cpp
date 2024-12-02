@@ -78,6 +78,36 @@ namespace Day2
         return true;        
     }
     
+    bool Report::is_safe_with_dampener()
+    {
+        Report other;
+        vector<long> removed_levels[DAY_2_MAX_LEVELS];
+        for (int i=0; i<m_num_levels; i++)
+        {
+            for (int j=0; j<m_num_levels; j++)
+            {
+                if (i != j)
+                {
+                    removed_levels[j].push_back(m_levels[i]);
+                }
+            }
+        }
+        for (int i=0; i<m_num_levels; i++)
+        {
+#ifdef DEBUG_DAY_2
+            cout << "  Checking with level " << i << " removed: ";
+#endif
+            other.load_report(removed_levels[i]);
+            if (other.is_safe())
+            {
+                return true;
+            }
+        }
+#ifdef DEBUG_DAY_2
+        cout << "  No combination makes this report safe" << endl;
+#endif
+        return false;
+    }
 }
 
 AocDay2::AocDay2():AocDay(2)
@@ -139,7 +169,32 @@ string AocDay2::part1(string filename, vector<string> extra_args)
 
 string AocDay2::part2(string filename, vector<string> extra_args)
 {
+    vector<Report> reports;
+    
+    if (!parse_input(filename, reports))
+    {
+        return "";
+    }
+    
     ostringstream out;
-    out << "Day 2 - Part 2 not implemented";
+    int num_safe = 0;
+    for (int i=0; i<reports.size(); i++)
+    {
+#ifdef DEBUG_DAY_2
+        cout << "Checking report " << i << ": ";
+#endif
+        if (reports[i].is_safe())
+        {
+            num_safe++;
+        }
+        else
+        {
+            if (reports[i].is_safe_with_dampener())
+            {
+                num_safe++;
+            }
+        }
+    }
+    out << num_safe;
     return out.str();
 }

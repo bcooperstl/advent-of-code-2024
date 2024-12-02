@@ -23,6 +23,7 @@ namespace Day2
             ~Report();
             bool load_report(vector<long> raw_data);
             bool is_safe();
+            bool is_safe_with_dampener();
     };
 }
 
