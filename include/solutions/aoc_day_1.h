@@ -7,6 +7,7 @@ class AocDay1 : public AocDay
 {
     private:
         void parse_input(string filename, vector<long> & left_list, vector<long> & right_list);
+        long get_count(long target, vector<long> & search_list);
     public:
         AocDay1();
         ~AocDay1();

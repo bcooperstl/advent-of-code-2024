@@ -41,6 +41,19 @@ void AocDay1::parse_input(string filename, vector<long> & left_list, vector<long
     return;
 }
 
+long AocDay1::get_count(long target, vector<long> & search_list)
+{
+    long count = 0;
+    for (int i=0; i<search_list.size(); i++)
+    {
+        if (search_list[i] == target)
+        {
+            count++;
+        }
+    }
+    return count;
+}
+
 string AocDay1::part1(string filename, vector<string> extra_args)
 {
     vector<long> left_list, right_list;
@@ -73,8 +86,19 @@ string AocDay1::part2(string filename, vector<string> extra_args)
     
     parse_input(filename, left_list, right_list);
     
+    long similarity_score = 0;
+    for (int i=0; i<left_list.size(); i++)
+    {
+        long count = get_count(left_list[i], right_list);
+        long score = left_list[i] * count;
+#ifdef DEBUG_DAY_1
+        cout << "Index " << i << ": left = " << left_list[i] << "  appears " << count << " times in the right list for score of " << score << endl;
+#endif        
+        
+        similarity_score += score;
+    }
     
     ostringstream out;
-    out << "Day 1 - Part 2 not implemented";
+    out << similarity_score;
     return out.str();
 }
