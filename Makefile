@@ -2,7 +2,7 @@ DEBUG=
 #Uncomment the below line to dispaly the runner debug
 #DEBUG+= -DDEBUG_RUNNER
 #Template for other debug flags to be added later
-DEBUG+= -DDEBUG_DAY_3
+DEBUG+= -DDEBUG_DAY_4
 
 #If adding another include directory, be sure to add it here
 CPPFLAGS=-g ${DEBUG} -Iinclude/common -Iinclude/runner -Iinclude/screen -Iinclude/solutions
@@ -255,8 +255,9 @@ build/aoc.o: src/aoc.cpp  \
 #If adding a new library, be sure to add it in the correct order in the compile line
 bin/aoc: build/aoc.o  \
 	bin/lib/librunner.a \
+	bin/lib/libscreen.a \
 	bin/lib/libsolutions.a
-	g++ ${CPPFLAGS} -o bin/aoc build/aoc.o -Lbin/lib -lsolutions -lrunner
+	g++ ${CPPFLAGS} -o bin/aoc build/aoc.o -Lbin/lib -lsolutions -lscreen -lrunner
 
 clean:
 	rm -f build/runner/aoc_test.o  \
