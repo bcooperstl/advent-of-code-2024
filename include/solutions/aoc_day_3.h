@@ -7,6 +7,9 @@ class AocDay3 : public AocDay
 {
     private:
         vector<string> read_input(string filename);
+        long calculate(string line);
+        long calculate_do_dont(string line);
+        bool m_enabled;
     public:
         AocDay3();
         ~AocDay3();
