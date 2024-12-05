@@ -103,6 +103,59 @@ int AocDay4::find_xmas_as_line(Screen & screen)
     return count;
 }
 
+int AocDay4::find_xmas_as_x(Screen & screen)
+{
+    int count = 0;
+    
+    // get the number of rows and cols
+    int min_col=screen.get_min_x();
+    int max_col=screen.get_max_x();
+    int min_row=screen.get_min_y();
+    int max_row=screen.get_max_y();
+    
+#ifdef DEBUG_DAY_4
+    cout << "Screen goes from row " << min_row << " to row " << max_row << " and col " << min_col << " to " << max_col << endl;
+#endif
+    
+    // expand the screen 1 time so no out of bounds
+    screen.expand('.');
+#ifdef DEBUG_DAY_4
+    screen.display();
+#endif
+
+    for (int row=min_row; row<=max_row; row++)
+    {
+        for (int col=min_col; col<=max_col; col++)
+        {
+            if (screen.get(col,row) == 'A') // get takes x,y
+            {
+#ifdef DEBUG_DAY_4
+                cout << "A found at " << col << "," << row << endl;
+#endif
+                char nw = screen.get(col-1,row-1);
+                char sw = screen.get(col-1,row+1);
+                char ne = screen.get(col+1,row-1);
+                char se = screen.get(col+1,row+1);
+
+                if ( ((nw=='M'&&se=='S') || (nw=='S'&&se=='M')) &&
+                     ((ne=='M'&&sw=='S') || (ne=='S'&&sw=='M')))
+                {
+#ifdef DEBUG_DAY_4
+                    cout << " X-MAS found at " 
+                         << col << "," << row << " "
+                         << col-1 << "," << row-1 << " "
+                         << col-1 << "," << row+1 << " "
+                         << col+1 << "," << row-1 << " "
+                         << col+1 << "," << row+1 << endl;                             
+#endif
+                    count++;
+                }
+            }
+        }
+    }
+
+    return count;
+}
 
 string AocDay4::part1(string filename, vector<string> extra_args)
 {
@@ -119,8 +172,11 @@ string AocDay4::part1(string filename, vector<string> extra_args)
 string AocDay4::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
-
+    
+    Screen screen;
+    screen.load(data,0,0);
+    
     ostringstream out;
-    out << "Day 4 - Part 2 not implemented";
+    out << find_xmas_as_x(screen);
     return out.str();
 }
