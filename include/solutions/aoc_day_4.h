@@ -2,11 +2,14 @@
 #define __AOC_DAY_4__
 
 #include "aoc_day.h"
+#include "screen.h"
 
 class AocDay4 : public AocDay
 {
     private:
         vector<string> read_input(string filename);
+        int find_xmas_as_line(Screen & screen);
+        int find_xmas_as_x(Screen & screen);
     public:
         AocDay4();
         ~AocDay4();
