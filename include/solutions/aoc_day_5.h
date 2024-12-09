@@ -34,6 +34,7 @@ namespace Day5
             ~Update();
             bool are_pages_in_order(Rules * rules);
             long get_middle_page();
+            void fix_order(Rules * rules);
     };
 }
 

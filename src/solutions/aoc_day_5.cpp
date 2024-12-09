@@ -91,7 +91,53 @@ namespace Day5
     {
         return m_page_list[(m_page_list.size()) / 2];
     }
-
+    
+    void Update::fix_order(Rules * rules)
+    {
+        vector<long> pages = m_page_list;
+        m_page_list.clear();
+        while (!pages.empty())
+        {
+#ifdef DEBUG_DAY_5
+            cout << "Searching for element " << m_page_list.size() + 1 << endl;
+#endif
+            vector<long>::iterator target = pages.begin();
+            while (target!=pages.end())
+            {
+                bool valid = true;
+                for (vector<long>::iterator pos = pages.begin(); pos != pages.end(); pos++)
+                {
+                    Ordering result = rules->get_ordering(*target, *pos);
+                    if (result == first_after)
+                    {
+#ifdef DEBUG_DAY_5
+                        cout << " " << *target << " cannot be in this position because it goes after " << *pos << endl;
+#endif
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid)
+                {
+                    break;
+                }
+                target++;
+            }
+            if (target == pages.end())
+            {
+                cerr << "!!!LOGIC FAILURE - NO ELEMENT TO ADD!!!" << endl;
+                break;
+            }
+#ifdef DEBUG_DAY_5
+            cout << "Adding element " << *target << " to reordered list" << endl;
+#endif
+            m_page_list.push_back(*target);
+            pages.erase(target);
+            
+        }
+        return;
+    }
+    
 }
 
 
@@ -163,9 +209,35 @@ string AocDay5::part1(string filename, vector<string> extra_args)
 
 string AocDay5::part2(string filename, vector<string> extra_args)
 {
-    //vector<string> data = read_input(filename);
-
+    Rules rules;
+    vector<Update> updates;
+    
+    parse_input(filename, rules, updates);
+    
+    int middle_page_sum=0;
+    for (int i=0; i<updates.size(); i++)
+    {
+#ifdef DEBUG_DAY_5
+        cout << "Checking update " << i << endl;
+#endif
+        if (updates[i].are_pages_in_order(&rules) == true)
+        {
+#ifdef DEBUG_DAY_5
+            cout << "  Update is in order...skipping" << endl;
+#endif
+        }
+        else
+        {
+            updates[i].fix_order(&rules);
+            int middle_page = updates[i].get_middle_page();
+#ifdef DEBUG_DAY_5
+            cout << "Adding middle page " << middle_page << " to sum" << endl;
+#endif
+            middle_page_sum += middle_page;
+        }
+    }
+    
     ostringstream out;
-    out << "Day 5 - Part 2 not implemented";
+    out << middle_page_sum;
     return out.str();
 }
