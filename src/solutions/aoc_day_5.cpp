@@ -115,7 +115,7 @@ void AocDay5::parse_input(string filename, Rules & rules, vector<Update> & updat
     }
     
     int data_index=0;
-    while (raw_data[data_index].size() != 0)
+    while (raw_data[data_index].size() == 2)
     {
         rules.add_ordering(raw_data[data_index][0], raw_data[data_index][1]);
         data_index++;
