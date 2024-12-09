@@ -88,7 +88,7 @@ build/solutions/aoc_day_4.o: src/solutions/aoc_day_4.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_4.o -c src/solutions/aoc_day_4.cpp
 
-build/solutions/aoc_day_5.o: src/solutions/aoc_day_4.cpp  \
+build/solutions/aoc_day_5.o: src/solutions/aoc_day_5.cpp  \
 	include/solutions/aoc_day_5.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -106,7 +106,7 @@ build/solutions/aoc_day_7.o: src/solutions/aoc_day_7.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_7.o -c src/solutions/aoc_day_7.cpp
 
-build/solutions/aoc_day_8.o: src/solutions/aoc_day_7.cpp  \
+build/solutions/aoc_day_8.o: src/solutions/aoc_day_8.cpp  \
 	include/solutions/aoc_day_8.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -124,7 +124,7 @@ build/solutions/aoc_day_10.o: src/solutions/aoc_day_10.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_10.o -c src/solutions/aoc_day_10.cpp
 
-build/solutions/aoc_day_11.o: src/solutions/aoc_day_10.cpp  \
+build/solutions/aoc_day_11.o: src/solutions/aoc_day_11.cpp  \
 	include/solutions/aoc_day_11.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -148,7 +148,7 @@ build/solutions/aoc_day_14.o: src/solutions/aoc_day_14.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_14.o -c src/solutions/aoc_day_14.cpp
 
-build/solutions/aoc_day_15.o: src/solutions/aoc_day_14.cpp  \
+build/solutions/aoc_day_15.o: src/solutions/aoc_day_15.cpp  \
 	include/solutions/aoc_day_15.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -166,7 +166,7 @@ build/solutions/aoc_day_17.o: src/solutions/aoc_day_17.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_17.o -c src/solutions/aoc_day_17.cpp
 
-build/solutions/aoc_day_18.o: src/solutions/aoc_day_17.cpp  \
+build/solutions/aoc_day_18.o: src/solutions/aoc_day_18.cpp  \
 	include/solutions/aoc_day_18.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -184,7 +184,7 @@ build/solutions/aoc_day_20.o: src/solutions/aoc_day_20.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_20.o -c src/solutions/aoc_day_20.cpp
 
-build/solutions/aoc_day_21.o: src/solutions/aoc_day_20.cpp  \
+build/solutions/aoc_day_21.o: src/solutions/aoc_day_21.cpp  \
 	include/solutions/aoc_day_21.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
@@ -208,7 +208,7 @@ build/solutions/aoc_day_24.o: src/solutions/aoc_day_24.cpp  \
 	include/common/constants.h
 	g++ ${CPPFLAGS} -o build/solutions/aoc_day_24.o -c src/solutions/aoc_day_24.cpp
 
-build/solutions/aoc_day_25.o: src/solutions/aoc_day_24.cpp  \
+build/solutions/aoc_day_25.o: src/solutions/aoc_day_25.cpp  \
 	include/solutions/aoc_day_25.h \
 	include/solutions/aoc_day.h \
 	include/common/constants.h
