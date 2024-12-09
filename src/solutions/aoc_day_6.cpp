@@ -30,6 +30,8 @@ namespace Day6
         m_screen->display();
         cout << "Starting visited map is:" << endl;
         m_visited->display_overlay();
+        cout << "Map goes from min_x " << m_screen->get_min_x() << " to max_x " << m_screen->get_max_x()
+             << " and min_y " << m_screen->get_min_y() << " to max_y " << m_screen->get_max_y() << endl;
 #endif
         for (int row=m_screen->get_min_y(); row<=m_screen->get_max_y(); row++)
         {
@@ -102,7 +104,7 @@ namespace Day6
             cout << " This position has an obstruction. Changing current direction to " << m_directions.directions[m_current_direction_index].symbol << endl;
         }
         else if ((m_screen->get(next_x, next_y) == DAY_6_SPACE) || 
-                 ((m_screen->get(next_x, next_y) == DAY_6_SPACE)))
+                 ((m_screen->get(next_x, next_y) == DAY_6_START)))
         {
             cout << " Position is available...moving to it" << endl;
             m_location_x = next_x;
@@ -114,6 +116,24 @@ namespace Day6
             return false;
         }
         return true;
+    }
+    
+    void Map::run_to_end()
+    {
+        while (run_one_step())
+        {
+#ifdef DEBUG_DAY_6_STEPS
+            m_visited->display_overlay();
+#endif
+        }
+#ifdef DEBUG_DAY_6_STEPS
+        m_visited->display_overlay();
+#endif
+    }
+    
+    int Map::get_num_visited()
+    {
+        return m_visited->num_matching(DAY_6_VISITED);
     }
     
 }
@@ -144,8 +164,10 @@ string AocDay6::part1(string filename, vector<string> extra_args)
     
     Map map(data);
     
+    map.run_to_end();
+    
     ostringstream out;
-    out << "Day 6 - Part 1 not implemented";
+    out << map.get_num_visited();
     return out.str();
 }
 
