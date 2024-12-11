@@ -95,7 +95,9 @@ namespace Day6
         if ( (next_x < m_screen->get_min_x()) || (next_x > m_screen->get_max_x()) ||
              (next_y < m_screen->get_min_y()) || (next_y > m_screen->get_max_y()) ) 
         {
+#ifdef DEBUG_DAY_6
             cout << " This position is out of bounds...all done" << endl; 
+#endif
             return false;
         }
         
@@ -103,12 +105,16 @@ namespace Day6
         if (m_screen->get(next_x, next_y) == DAY_6_OBSTRUCTION)
         {
             m_current_direction_index = ((m_current_direction_index + 1 ) % DAY_6_NUM_DIRECTIONS);
+#ifdef DEBUG_DAY_6
             cout << " This position has an obstruction. Changing current direction to " << m_directions.directions[m_current_direction_index].symbol << endl;
+#endif
         }
         else if ((m_screen->get(next_x, next_y) == DAY_6_SPACE) || 
                  ((m_screen->get(next_x, next_y) == DAY_6_START)))
         {
+#ifdef DEBUG_DAY_6
             cout << " Position is available...moving to it" << endl;
+#endif
             m_location_x = next_x;
             m_location_y = next_y;
         }
@@ -173,7 +179,9 @@ namespace Day6
             // if this is false, we have exited the map and there is no loop
             if (!run_one_step())
             {
+#ifdef DEBUG_DAY_6
                 cout << "Outside of map!!" << endl;
+#endif            
                 break;
             }
 #ifdef DEBUG_DAY_6_STEPS
@@ -197,9 +205,7 @@ namespace Day6
             {
                 if ((original_visited->get(col, row) == DAY_6_VISITED) && (m_screen->get(col, row) != DAY_6_START))
                 {
-#ifdef DEBUG_DAY_6
                     cout << "Checking with new obstrction at " << col << "," << row << endl;
-#endif
                     m_visited = new Overlay(m_screen);
                     count += (does_new_obstruction_loop(col, row) ? 1 : 0);
                     delete m_visited;
