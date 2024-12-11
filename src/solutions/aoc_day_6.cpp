@@ -44,6 +44,8 @@ namespace Day6
 #endif
                     m_location_x=col;
                     m_location_y=row;
+                    m_start_x=col;
+                    m_start_y=row;
                     m_current_direction_index = 0;
                 }
             }
@@ -136,6 +138,77 @@ namespace Day6
         return m_visited->num_matching(DAY_6_VISITED);
     }
     
+    bool Map::does_new_obstruction_loop(int col, int row)
+    {
+        m_screen->set(col, row, DAY_6_OBSTRUCTION);
+        m_location_x=m_start_x;
+        m_location_y=m_start_y;
+        m_current_direction_index=0;
+        Overlay direction_maps[4] = {Overlay(m_screen), Overlay(m_screen), Overlay(m_screen), Overlay(m_screen)};
+        
+        bool loop_found = false;
+        
+        while (1)
+        {
+            char current = ((Screen)direction_maps[m_current_direction_index]).get(m_location_x, m_location_y);
+            if (current == m_directions.directions[m_current_direction_index].symbol)
+            {
+#ifdef DEBUG_DAY_6
+                cout << "Loop found with duplicate " << m_directions.directions[m_current_direction_index].symbol
+                     << " at " << m_location_x << "," << m_location_y << endl;
+#endif            
+                loop_found=true;
+                break;
+            }
+            
+#ifdef DEBUG_DAY_6
+            cout << "Setting " << m_directions.directions[m_current_direction_index].symbol
+                 << " at " << m_location_x << "," << m_location_y << endl;
+#endif            
+            direction_maps[m_current_direction_index].set(m_location_x, m_location_y, m_directions.directions[m_current_direction_index].symbol);
+            
+#ifdef DEBUG_DAY_6_STEPS
+            direction_maps[m_current_direction_index].display_overlay();
+#endif            
+            // if this is false, we have exited the map and there is no loop
+            if (!run_one_step())
+            {
+                cout << "Outside of map!!" << endl;
+                break;
+            }
+#ifdef DEBUG_DAY_6_STEPS
+            m_visited->display_overlay();
+#endif
+        }
+        
+        m_screen->set(col, row, DAY_6_SPACE);
+        return loop_found;
+    }
+    
+    
+    int Map::get_num_obstruction_loop_positions()
+    {
+        Overlay * original_visited = m_visited;
+        
+        int count = 0;
+        for (int row=m_screen->get_min_y(); row<=m_screen->get_max_y(); row++)
+        {
+            for (int col=m_screen->get_min_x(); col<=m_screen->get_max_x(); col++)
+            {
+                if ((original_visited->get(col, row) == DAY_6_VISITED) && (m_screen->get(col, row) != DAY_6_START))
+                {
+#ifdef DEBUG_DAY_6
+                    cout << "Checking with new obstrction at " << col << "," << row << endl;
+#endif
+                    m_visited = new Overlay(m_screen);
+                    count += (does_new_obstruction_loop(col, row) ? 1 : 0);
+                    delete m_visited;
+                }
+            }
+        }
+        m_visited = original_visited;
+        return count;
+    }
 }
 
 AocDay6::AocDay6():AocDay(6)
@@ -174,8 +247,12 @@ string AocDay6::part1(string filename, vector<string> extra_args)
 string AocDay6::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
-
+    
+    Map map(data);
+    
+    map.run_to_end();
+    
     ostringstream out;
-    out << "Day 6 - Part 2 not implemented";
+    out << map.get_num_obstruction_loop_positions();
     return out.str();
 }

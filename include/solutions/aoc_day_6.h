@@ -32,13 +32,16 @@ namespace Day6
             bool run_one_step();
             int m_location_x;
             int m_location_y;
+            int m_start_x;
+            int m_start_y;
             int m_current_direction_index;
-            
+            bool does_new_obstruction_loop(int col, int row);
         public:
             Map(vector<string> data);
             ~Map();
             void run_to_end();
             int get_num_visited();
+            int get_num_obstruction_loop_positions();
     };
 }
 
