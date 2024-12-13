@@ -3,10 +3,22 @@
 
 #include "aoc_day.h"
 
+namespace Day7
+{
+    struct Calibration
+    {
+        unsigned long long int result;
+        vector<unsigned long long int> numbers;
+    };
+}
+
+using namespace Day7;
+
 class AocDay7 : public AocDay
 {
     private:
-        vector<string> read_input(string filename);
+        void parse_input(string filename, vector<Calibration> & calibraitons);
+        bool is_calibration_valid(Calibration calibration, bool include_concatenation);
     public:
         AocDay7();
         ~AocDay7();
