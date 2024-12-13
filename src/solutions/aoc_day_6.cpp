@@ -178,9 +178,11 @@ namespace Day6
         int next_x = m_location_x + m_directions.directions[m_current_direction_index].move_x;
         int next_y = m_location_y + m_directions.directions[m_current_direction_index].move_y;
         
+#ifdef DEBUG_DAY_6
         cout << "moving " << m_directions.directions[m_current_direction_index].symbol 
              << " from " << m_location_x << "," << m_location_y
              << " to " << next_x << "," << next_y << endl;
+#endif
         
         // check if next position is out of bounds
         if ( (next_x < 0) || (next_x >= m_cols) ||
@@ -254,8 +256,8 @@ namespace Day6
         
         while (1)
         {
-            cout << "Checking for loop at " << m_location_x << "," << m_location_y << endl;
 #ifdef DEBUG_DAY_6_STEPS
+            cout << "Checking for loop at " << m_location_x << "," << m_location_y << endl;
             display_part2();
 #endif
             if (m_map[m_location_y][m_location_x].visited_part2 & m_directions.directions[m_current_direction_index].visited_mask)
@@ -309,7 +311,6 @@ namespace Day6
     
     int Map::get_num_obstruction_loop_positions()
     {
-        cout << " Checking for loops " << endl;
         int count = 0;
         for (int row=0; row<m_rows; row++)
         {
@@ -317,7 +318,9 @@ namespace Day6
             {
                 if ((m_map[row][col].visited_part1 == DAY_6_VISITED_ANY) && (m_map[row][col].symbol != DAY_6_START))
                 {
+#ifdef DEBUG_DAY_6
                     cout << "Checking with new obstrction at " << col << "," << row << endl;
+#endif
                     count += (does_new_obstruction_loop(col, row) ? 1 : 0);
                 }
             }
