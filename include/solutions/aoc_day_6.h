@@ -3,9 +3,6 @@
 
 #include "aoc_day.h"
 
-#include "screen.h"
-#include "overlay.h"
-
 #define DAY_6_NUM_DIRECTIONS 4
 #define DAY_6_MAX_LENGTH 140
 
@@ -14,7 +11,8 @@ namespace Day6
     struct Cell
     {
         char symbol;
-        char visited;
+        char visited_part1;
+        char visited_part2;
     };
     
     struct Direction
@@ -47,6 +45,7 @@ namespace Day6
             //bool does_new_obstruction_loop(int col, int row);
             void display();
             void load_data(vector<string> data);
+            void reset();
         public:
             Map(vector<string> data);
             ~Map();

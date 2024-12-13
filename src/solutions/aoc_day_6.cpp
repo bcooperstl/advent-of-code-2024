@@ -70,7 +70,8 @@ namespace Day6
             for (int x=0; x<m_cols; x++)
             {
                 m_map[y][x].symbol=data[y][x];
-                m_map[y][x].visited=DAY_6_NOT_VISITED;
+                m_map[y][x].visited_part1=DAY_6_NOT_VISITED;
+                m_map[y][x].visited_part1=DAY_6_NOT_VISITED;
                 if (m_map[y][x].symbol == DAY_6_START)
                 {
 #ifdef DEBUG_DAY_6
@@ -100,7 +101,7 @@ namespace Day6
         {
             for (int x=0; x<m_cols; x++)
             {
-                if (m_map[y][x].visited != DAY_6_NOT_VISITED)
+                if (m_map[y][x].visited_part1 != DAY_6_NOT_VISITED)
                 {
                     cout << DAY_6_VISITED;
                 }
@@ -118,7 +119,7 @@ namespace Day6
     bool Map::run_one_step()
     {
         // mark current position as visited
-        m_map[m_location_y][m_location_x].visited = DAY_6_VISITED_ANY;
+        m_map[m_location_y][m_location_x].visited_part1 = DAY_6_VISITED_ANY;
         
         // calculate next position for current direction
         int next_x = m_location_x + m_directions.directions[m_current_direction_index].move_x;
@@ -183,7 +184,7 @@ namespace Day6
         {
             for (int col=0; col<m_cols; col++)
             {
-                if (m_map[row][col].visited==DAY_6_VISITED_ANY)
+                if (m_map[row][col].visited_part1==DAY_6_VISITED_ANY)
                 {
                     count++;
                 }
@@ -243,6 +244,20 @@ namespace Day6
     }
 */    
     
+    void Map::reset()
+    {
+        m_location_x = m_start_x;
+        m_location_y = m_start_y;
+        m_current_direction_index = 0;
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                m_map[y][x].visited_part2=DAY_6_NOT_VISITED;
+            }
+        }
+    }
+    
 /*
     int Map::get_num_obstruction_loop_positions()
     {
@@ -265,8 +280,7 @@ namespace Day6
         m_visited = original_visited;
         return count;
     }
-*/
-}
+*/}
 
 AocDay6::AocDay6():AocDay(6)
 {
