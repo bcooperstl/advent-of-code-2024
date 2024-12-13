@@ -55,7 +55,9 @@ namespace Day5
     
     bool Update::are_pages_in_order(Rules * rules)
     {
+#ifdef DEBUG_DAY_5
         cout << "Checking if pages are in order" << endl;
+#endif
         for (int first=0; first<m_page_list.size() - 1; first++)
         {
             for (int second=first+1; second<m_page_list.size(); second++)
