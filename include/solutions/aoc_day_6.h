@@ -7,41 +7,52 @@
 #include "overlay.h"
 
 #define DAY_6_NUM_DIRECTIONS 4
+#define DAY_6_MAX_LENGTH 140
 
 namespace Day6
 {
+    struct Cell
+    {
+        char symbol;
+        char visited;
+    };
+    
     struct Direction
     {
         int move_x;
         int move_y;
         char symbol;
+        char visited_mask;
     };
     
     struct Directions
     {
         Direction directions[DAY_6_NUM_DIRECTIONS];
     };
-    
+        
     class Map
     {
         private:
-            Screen * m_screen;
-            Overlay * m_visited;
+            Cell m_map[DAY_6_MAX_LENGTH][DAY_6_MAX_LENGTH];
             Directions m_directions;
             void init_directions();
             bool run_one_step();
+            int m_rows;
+            int m_cols;
             int m_location_x;
             int m_location_y;
             int m_start_x;
             int m_start_y;
             int m_current_direction_index;
-            bool does_new_obstruction_loop(int col, int row);
+            //bool does_new_obstruction_loop(int col, int row);
+            void display();
+            void load_data(vector<string> data);
         public:
             Map(vector<string> data);
             ~Map();
             void run_to_end();
             int get_num_visited();
-            int get_num_obstruction_loop_positions();
+            //int get_num_obstruction_loop_positions();
     };
 }
 

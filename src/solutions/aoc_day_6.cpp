@@ -16,72 +16,109 @@ using namespace Day6;
 #define DAY_6_START '^'
 #define DAY_6_VISITED 'X'
 
+#define DAY_6_NOT_VISITED 0
+#define DAY_6_VISITED_NORTH 1
+#define DAY_6_VISITED_EAST 2
+#define DAY_6_VISITED_SOUTH 4
+#define DAY_6_VISITED_WEST 8
+#define DAY_6_VISITED_ANY 15
+
 namespace Day6
 {
     Map::Map(vector<string> data)
     {
         init_directions();
         
-        m_screen = new Screen();
-        m_screen->load(data);
-        m_visited = new Overlay(m_screen);
-#ifdef DEBUG_DAY_6
-        cout << "Starting screen is:" << endl;
-        m_screen->display();
-        cout << "Starting visited map is:" << endl;
-        m_visited->display_overlay();
-        cout << "Map goes from min_x " << m_screen->get_min_x() << " to max_x " << m_screen->get_max_x()
-             << " and min_y " << m_screen->get_min_y() << " to max_y " << m_screen->get_max_y() << endl;
-#endif
-        for (int row=m_screen->get_min_y(); row<=m_screen->get_max_y(); row++)
-        {
-            for (int col=m_screen->get_min_x(); col<=m_screen->get_max_x(); col++)
-            {
-                if (m_screen->get(col, row) == DAY_6_START)
-                {
-#ifdef DEBUG_DAY_6
-                    cout << "Starting position found at x=" << col << " and y=" << row << " direction " << m_screen->get(col, row) << endl;
-#endif
-                    m_location_x=col;
-                    m_location_y=row;
-                    m_start_x=col;
-                    m_start_y=row;
-                    m_current_direction_index = 0;
-                }
-            }
-        }
+        load_data(data);
     }
     
     Map::~Map()
     {
-        delete m_visited;
-        delete m_screen;
     }
     
     void Map::init_directions()
     {
         m_directions.directions[0].symbol='^';
+        m_directions.directions[0].visited_mask=DAY_6_VISITED_NORTH;
         m_directions.directions[0].move_x=0;
         m_directions.directions[0].move_y=-1;
 
         m_directions.directions[1].symbol='>';
+        m_directions.directions[1].visited_mask=DAY_6_VISITED_EAST;
         m_directions.directions[1].move_x=1;
         m_directions.directions[1].move_y=0;
 
         m_directions.directions[2].symbol='v';
+        m_directions.directions[2].visited_mask=DAY_6_VISITED_SOUTH;
         m_directions.directions[2].move_x=0;
         m_directions.directions[2].move_y=1;
 
         m_directions.directions[3].symbol='<';
+        m_directions.directions[3].visited_mask=DAY_6_VISITED_WEST;
         m_directions.directions[3].move_x=-1;
         m_directions.directions[3].move_y=0;
         
     }
     
+    void Map::load_data(vector<string> data)
+    {
+        m_rows = data.size();
+        m_cols = data[0].length();
+        
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                m_map[y][x].symbol=data[y][x];
+                m_map[y][x].visited=DAY_6_NOT_VISITED;
+                if (m_map[y][x].symbol == DAY_6_START)
+                {
+#ifdef DEBUG_DAY_6
+                    cout << "Starting position found at x=" << x << " and y=" << y << " direction " << m_map[y][x].symbol << endl;
+#endif
+                    m_location_x=x;
+                    m_location_y=y;
+                    m_start_x=x;
+                    m_start_y=y;
+                    m_current_direction_index = 0;
+                }
+            }
+        }
+#ifdef DEBUG_DAY_6
+        cout << "Starting screen is:" << endl;
+        display();
+        cout << "Map goes from min_x 0  to max_x " << m_cols - 1
+             << " and min_y 0 to max_y " << m_rows - 1 << endl;
+#endif
+        return;
+        
+    }
+    
+    void Map::display()
+    {
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                if (m_map[y][x].visited != DAY_6_NOT_VISITED)
+                {
+                    cout << DAY_6_VISITED;
+                }
+                else
+                {
+                    cout << m_map[y][x].symbol;
+                }
+            }
+            cout << endl;
+        }
+        
+        return;
+    }
+    
     bool Map::run_one_step()
     {
         // mark current position as visited
-        m_visited->set(m_location_x, m_location_y, DAY_6_VISITED);
+        m_map[m_location_y][m_location_x].visited = DAY_6_VISITED_ANY;
         
         // calculate next position for current direction
         int next_x = m_location_x + m_directions.directions[m_current_direction_index].move_x;
@@ -92,8 +129,8 @@ namespace Day6
              << " to " << next_x << "," << next_y << endl;
         
         // check if next position is out of bounds
-        if ( (next_x < m_screen->get_min_x()) || (next_x > m_screen->get_max_x()) ||
-             (next_y < m_screen->get_min_y()) || (next_y > m_screen->get_max_y()) ) 
+        if ( (next_x < 0) || (next_x >= m_cols) ||
+             (next_y < 0) || (next_y >= m_rows) ) 
         {
 #ifdef DEBUG_DAY_6
             cout << " This position is out of bounds...all done" << endl; 
@@ -102,15 +139,15 @@ namespace Day6
         }
         
         // check if next position is space or obstruction
-        if (m_screen->get(next_x, next_y) == DAY_6_OBSTRUCTION)
+        if (m_map[next_y][next_x].symbol == DAY_6_OBSTRUCTION)
         {
             m_current_direction_index = ((m_current_direction_index + 1 ) % DAY_6_NUM_DIRECTIONS);
 #ifdef DEBUG_DAY_6
             cout << " This position has an obstruction. Changing current direction to " << m_directions.directions[m_current_direction_index].symbol << endl;
 #endif
         }
-        else if ((m_screen->get(next_x, next_y) == DAY_6_SPACE) || 
-                 ((m_screen->get(next_x, next_y) == DAY_6_START)))
+        else if ((m_map[next_y][next_x].symbol == DAY_6_SPACE) || 
+                 ((m_map[next_y][next_x].symbol == DAY_6_START)))
         {
 #ifdef DEBUG_DAY_6
             cout << " Position is available...moving to it" << endl;
@@ -120,7 +157,7 @@ namespace Day6
         }
         else
         {
-            cerr << "!!!!!invalid value " << m_screen->get(next_x, next_y) << endl;
+            cerr << "!!!!!invalid value " << m_map[next_y][next_x].symbol << endl;
             return false;
         }
         return true;
@@ -131,19 +168,31 @@ namespace Day6
         while (run_one_step())
         {
 #ifdef DEBUG_DAY_6_STEPS
-            m_visited->display_overlay();
+            display();
 #endif
         }
 #ifdef DEBUG_DAY_6_STEPS
-        m_visited->display_overlay();
+        display();
 #endif
     }
     
     int Map::get_num_visited()
     {
-        return m_visited->num_matching(DAY_6_VISITED);
+        int count=0;
+        for (int row=0; row<m_rows; row++)
+        {
+            for (int col=0; col<m_cols; col++)
+            {
+                if (m_map[row][col].visited==DAY_6_VISITED_ANY)
+                {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
     
+/*
     bool Map::does_new_obstruction_loop(int col, int row)
     {
         m_screen->set(col, row, DAY_6_OBSTRUCTION);
@@ -192,8 +241,9 @@ namespace Day6
         m_screen->set(col, row, DAY_6_SPACE);
         return loop_found;
     }
+*/    
     
-    
+/*
     int Map::get_num_obstruction_loop_positions()
     {
         Overlay * original_visited = m_visited;
@@ -215,6 +265,7 @@ namespace Day6
         m_visited = original_visited;
         return count;
     }
+*/
 }
 
 AocDay6::AocDay6():AocDay(6)
@@ -259,6 +310,6 @@ string AocDay6::part2(string filename, vector<string> extra_args)
     map.run_to_end();
     
     ostringstream out;
-    out << map.get_num_obstruction_loop_positions();
+    out << 0;
     return out.str();
 }
