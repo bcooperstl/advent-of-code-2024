@@ -18,7 +18,7 @@ class AocDay7 : public AocDay
 {
     private:
         void parse_input(string filename, vector<Calibration> & calibraitons);
-        bool is_calibration_valid(Calibration calibration);
+        bool is_calibration_valid(Calibration calibration, bool include_concatenation);
     public:
         AocDay7();
         ~AocDay7();

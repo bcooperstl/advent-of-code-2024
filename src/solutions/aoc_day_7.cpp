@@ -18,7 +18,7 @@ AocDay7::~AocDay7()
 {
 }
 
-bool AocDay7::is_calibration_valid(Calibration calibration)
+bool AocDay7::is_calibration_valid(Calibration calibration, bool include_concatenation = false)
 {
     vector<unsigned long long int> in_progress;
     // add the first value as the only operand so far
@@ -36,9 +36,9 @@ bool AocDay7::is_calibration_valid(Calibration calibration)
         for (int j=0; j<in_progress.size(); j++)
         {
             // addition operation first
-            unsigned long long int result = calibration.numbers[i] + in_progress[j];
+            unsigned long long int result = in_progress[j] + calibration.numbers[i];
 #ifdef DEBUG_DAY_7
-            cout << " " << calibration.numbers[i] << " + " <<  in_progress[j] << " = " << result << endl;
+            cout << " " << in_progress[j] << " + " <<  calibration.numbers[i] << " = " << result << endl;
 #endif
             if (result <= calibration.result)
             {
@@ -52,8 +52,10 @@ bool AocDay7::is_calibration_valid(Calibration calibration)
             }
             
             // multiplication operation second
-            result = calibration.numbers[i] * in_progress[j];
-            cout << " " << calibration.numbers[i] << " * " <<  in_progress[j] << " = " << result << endl;
+            result = in_progress[j] * calibration.numbers[i];
+#ifdef DEBUG_DAY_7
+            cout << " " << in_progress[j] << " * " <<  calibration.numbers[i] << " = " << result << endl;
+#endif
             if (result <= calibration.result)
             {
                 results.push_back(result);
@@ -63,6 +65,27 @@ bool AocDay7::is_calibration_valid(Calibration calibration)
 #ifdef DEBUG_DAY_7
                 cout << "  too large...removing" << endl;
 #endif
+            }
+            
+            // concatenation third for part 2
+            if (include_concatenation == true)
+            {
+                ostringstream result_stream;
+                result_stream << in_progress[j] << calibration.numbers[i];
+                result = strtoull(result_stream.str().c_str(), NULL, 10);
+#ifdef DEBUG_DAY_7
+                cout << " " << in_progress[j] << " || " <<  calibration.numbers[i] << " = " << result << endl;
+#endif
+                if (result <= calibration.result)
+                {
+                    results.push_back(result);
+                }
+                else
+                {
+#ifdef DEBUG_DAY_7
+                    cout << "  too large...removing" << endl;
+#endif
+                }
             }
         }
         in_progress = results;
@@ -82,6 +105,7 @@ bool AocDay7::is_calibration_valid(Calibration calibration)
 #endif
     return false;
 }
+
 
 void AocDay7::parse_input(string filename, vector<Calibration> & calibrations)
 {
@@ -131,8 +155,17 @@ string AocDay7::part2(string filename, vector<string> extra_args)
 {
     vector<Calibration> calibrations;
     parse_input(filename, calibrations);
-
+    
+    unsigned long long int sum = 0;
+    for (int i=0; i<calibrations.size(); i++)
+    {
+        if (is_calibration_valid(calibrations[i], true))
+        {
+            sum += calibrations[i].result;
+        }
+    }
+    
     ostringstream out;
-    out << "Day 7 - Part 2 not implemented";
+    out << sum;
     return out.str();
 }
