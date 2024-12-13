@@ -34,7 +34,7 @@ namespace Day6
             Cell m_map[DAY_6_MAX_LENGTH][DAY_6_MAX_LENGTH];
             Directions m_directions;
             void init_directions();
-            bool run_one_step();
+            bool run_one_step(bool set_visited = true);
             int m_rows;
             int m_cols;
             int m_location_x;
@@ -42,8 +42,9 @@ namespace Day6
             int m_start_x;
             int m_start_y;
             int m_current_direction_index;
-            //bool does_new_obstruction_loop(int col, int row);
+            bool does_new_obstruction_loop(int col, int row);
             void display();
+            void display_part2();
             void load_data(vector<string> data);
             void reset();
         public:
@@ -51,7 +52,7 @@ namespace Day6
             ~Map();
             void run_to_end();
             int get_num_visited();
-            //int get_num_obstruction_loop_positions();
+            int get_num_obstruction_loop_positions();
     };
 }
 
