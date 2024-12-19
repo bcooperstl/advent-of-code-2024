@@ -146,10 +146,20 @@ namespace Day8
                 }
                 if (found == false)
                 {
+                    if (curr_antinodes[i].row < m_min_row || curr_antinodes[i].row > m_max_row ||
+                        curr_antinodes[i].col < m_min_col || curr_antinodes[i].col > m_max_col)
+                    {
 #ifdef DEBUG_DAY_8
-                    cout << "~~~Adding antinode at row=" << curr_antinodes[i].row << " col=" << curr_antinodes[i].col << endl;
+                        cout << "~~~Antinode at row=" << curr_antinodes[i].row << " col=" << curr_antinodes[i].col << " is outside of the map" << endl;
+#endif                        
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_8
+                        cout << "~~~Adding antinode at row=" << curr_antinodes[i].row << " col=" << curr_antinodes[i].col << endl;
 #endif
-                    antinodes.push_back(curr_antinodes[i]);
+                        antinodes.push_back(curr_antinodes[i]);
+                    }
                 }
             }
             ++pos;
