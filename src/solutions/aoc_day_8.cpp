@@ -97,6 +97,60 @@ namespace Day8
         return antinodes;
     }
     
+    vector<Location> Frequency::get_harmonic_antinodes(int min_row, int max_row, int min_col, int max_col)
+    {
+        vector<Location> antinodes;
+#ifdef DEBUG_DAY_8
+        cout << "Finding antinodes for frequency " << m_symbol << endl;
+#endif
+        
+        for (int i=0; i<m_nodes.size()-1; i++)
+        {
+            for (int j=i+1; j<m_nodes.size(); j++)
+            {
+                int row_change = m_nodes[i].row - m_nodes[j].row;
+                int col_change = m_nodes[i].col - m_nodes[j].col;
+#ifdef DEBUG_DAY_8
+                cout << " Antinodes for locations row=" << m_nodes[i].row << " col=" << m_nodes[i].col
+                     << " and row=" << m_nodes[j].row << " col=" << m_nodes[j].col 
+                     << " with row_change=" << row_change << " and col_change=" << col_change << ":" << endl;
+#endif
+                Location loc;
+
+                // first do nodes moving in the positive change direction from the i node
+                loc.row = m_nodes[i].row;
+                loc.col = m_nodes[i].col;
+                while (loc.row >= min_row && loc.row <= max_row &&
+                       loc.col >= min_col && loc.col <= max_col)
+                {
+#ifdef DEBUG_DAY_8
+                cout << "  Antinode at row=" << loc.row << " col=" << loc.col << endl;
+#endif
+                    antinodes.push_back(loc);
+
+                    loc.row+=row_change;
+                    loc.col+=col_change;
+                }
+
+                // next do nodes moving in the negative change direction from the j node
+                loc.row = m_nodes[j].row;
+                loc.col = m_nodes[j].col;
+                while (loc.row >= min_row && loc.row <= max_row &&
+                       loc.col >= min_col && loc.col <= max_col)
+                {
+#ifdef DEBUG_DAY_8
+                cout << "  Antinode at row=" << loc.row << " col=" << loc.col << endl;
+#endif
+                    antinodes.push_back(loc);
+
+                    loc.row-=row_change;
+                    loc.col-=col_change;
+                }
+            }
+        }
+        return antinodes;
+    }
+
     City::City()
     {
     }
@@ -167,6 +221,45 @@ namespace Day8
         return antinodes;
     }
     
+    vector <Location> City::get_all_harmonic_antinodes_in_city()
+    {
+#ifdef DEBUG_DAY_8
+        cout << "~~Building harmonic antinodes for city" << endl;
+#endif
+        vector<Location> antinodes;
+        map<char, Frequency>::iterator pos = m_frequencies.begin();
+        while (pos != m_frequencies.end())
+        {
+            Frequency current = pos->second;
+            vector<Location> curr_antinodes = current.get_harmonic_antinodes(m_min_row, m_max_row, m_min_col, m_max_col);
+            for (int i=0; i<curr_antinodes.size(); i++)
+            {
+                bool found = false;
+                for (int j=0; j<antinodes.size(); j++)
+                {
+                    if (curr_antinodes[i] == antinodes[j])
+                    {
+#ifdef DEBUG_DAY_8
+                        cout << "~~~Antinode at row=" << curr_antinodes[i].row << " col=" << curr_antinodes[i].col << " already exists" << endl;
+#endif
+                        found = true;
+                        break;
+                    }
+                }
+                // bound checking is now done in get_harmonic_antinodes so no need to duplicate it here
+                if (found == false)
+                {
+#ifdef DEBUG_DAY_8
+                    cout << "~~~Adding antinode at row=" << curr_antinodes[i].row << " col=" << curr_antinodes[i].col << endl;
+#endif
+                    antinodes.push_back(curr_antinodes[i]);
+                }
+            }
+            ++pos;
+        }
+        return antinodes;
+    }
+
     void City::map_city(vector<string> data)
     {
         m_min_row = 0;
@@ -231,7 +324,11 @@ string AocDay8::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
 
+    City city;
+    city.map_city(data);
+    vector<Location> antinodes = city.get_all_harmonic_antinodes_in_city();
+    
     ostringstream out;
-    out << "Day 8 - Part 2 not implemented";
+    out << antinodes.size();
     return out.str();
 }

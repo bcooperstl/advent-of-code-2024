@@ -26,6 +26,7 @@ namespace Day8
             ~Frequency();
             void add_node(Location location);
             vector<Location> get_antinodes();
+            vector<Location> get_harmonic_antinodes(int min_row, int max_row, int min_col, int max_col);
     };
     
     class City
@@ -41,6 +42,7 @@ namespace Day8
             ~City();
             void add_node(char symbol, Location location);
             vector<Location> get_all_antinodes_in_city();
+            vector<Location> get_all_harmonic_antinodes_in_city();
             void map_city(vector<string> data);
     };
 }
