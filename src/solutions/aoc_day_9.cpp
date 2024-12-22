@@ -125,9 +125,12 @@ namespace Day9
     long DiskMap::compute_checksum()
     {
         long checksum = 0;
-        for (int block=0; block<m_file_blocks; block++)
+        for (int block=0; block<m_num_blocks_used; block++)
         {
-            checksum+=((long)block) * ((long)m_disk_map[block].file_id);
+            if (m_disk_map[block].file_id != DAY_9_FREE_SPACE)
+            {
+                checksum+=((long)block) * ((long)m_disk_map[block].file_id);
+            }
         }
         return checksum;
     }
