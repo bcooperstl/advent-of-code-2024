@@ -33,6 +33,7 @@ namespace Day10
             {
                 m_map[row][col].height = data[row][col]-'0';
                 m_map[row][col].reachable_high_points.clear();
+                m_map[row][col].num_distinct_trails=0;
             }
         }
         
@@ -72,6 +73,12 @@ namespace Day10
             
             ++src_pos;
         }
+    
+        destination->num_distinct_trails+=source->num_distinct_trails;
+#ifdef DEBUG_DAY_10
+        cout << "   Adding " << source->num_distinct_trails << " distinct trails resulting in " << destination->num_distinct_trails << endl;
+#endif
+        return;
     }
     
     void Map::find_paths_to_high_points(int height)
@@ -94,6 +101,7 @@ namespace Day10
                         loc.row=row;
                         loc.col=col;
                         m_map[row][col].reachable_high_points.push_back(loc);
+                        m_map[row][col].num_distinct_trails=1;
                     }
                     else
                     {
@@ -197,6 +205,25 @@ namespace Day10
         }
         return sum;
     }
+
+    int Map::get_total_rating()
+    {
+        int sum=0;
+        for (int row=0; row<m_rows; row++)
+        {
+            for (int col=0; col<m_cols; col++)
+            {
+                if (m_map[row][col].height == 0)
+                {
+#ifdef DEBUG_DAY_10
+                    cout << "Starting point at row=" << row << " col=" << col << " has rating of " << m_map[row][col].num_distinct_trails << endl;
+#endif
+                    sum+=m_map[row][col].num_distinct_trails;
+                }
+            }
+        }
+        return sum;
+    }
 }
 
 AocDay10::AocDay10():AocDay(10)
@@ -239,8 +266,16 @@ string AocDay10::part1(string filename, vector<string> extra_args)
 string AocDay10::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
-
+    
+    Map map;
+    
+    map.load_map(data);
+    for (int level=9; level>=0; level--)
+    {
+        map.find_paths_to_high_points(level);
+    }
+    
     ostringstream out;
-    out << "Day 10 - Part 2 not implemented";
+    out << map.get_total_rating();
     return out.str();
 }

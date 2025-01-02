@@ -17,6 +17,7 @@ namespace Day10
     {
         int height;
         vector<ReachableHighPoint> reachable_high_points;
+        int num_distinct_trails;
     };
     
     class Map
@@ -32,6 +33,7 @@ namespace Day10
             void load_map(vector<string> data);
             void find_paths_to_high_points(int height);
             int get_total_score();
+            int get_total_rating();
     };
 }
 
