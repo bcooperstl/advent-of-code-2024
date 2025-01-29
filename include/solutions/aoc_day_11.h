@@ -26,14 +26,15 @@ namespace Day11
             ~StoneProcessor();
             vector<StoneQuantity> perform_blink(long long int value);
             void build_single_digit_dictionary();
-            map<long long int, StoneQuantity> process_input(vector<long> input_values);
+            map<long long int, StoneQuantity> process_input(vector<long long int> input_values);
+            map<long long int, StoneQuantity> process_input_thrice(vector<long long int> input_values);
     };
 }
 
 class AocDay11 : public AocDay
 {
     private:
-        vector<long> read_input(string filename);
+        vector<long long int> read_input(string filename);
     public:
         AocDay11();
         ~AocDay11();
