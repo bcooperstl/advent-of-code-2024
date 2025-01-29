@@ -5,7 +5,8 @@
 
 #include "aoc_day.h"
 
-#define DAY_11_NUM_BLINKS 25
+#define DAY_11_NUM_BLINKS 75
+#define DAY_11_PART_1_BLINKS 25
 
 using namespace std;
 namespace Day11
@@ -26,8 +27,7 @@ namespace Day11
             ~StoneProcessor();
             vector<StoneQuantity> perform_blink(long long int value);
             void build_single_digit_dictionary();
-            map<long long int, StoneQuantity> process_input(vector<long long int> input_values);
-            map<long long int, StoneQuantity> process_input_thrice(vector<long long int> input_values);
+            map<long long int, StoneQuantity> process_input(map<long long int, StoneQuantity> input_map, int blinks);
     };
 }
 

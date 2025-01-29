@@ -90,7 +90,7 @@ namespace Day11
             sq.value=digit;
             sq.quantity=1;
             m_single_digit_dictionary[digit][0][digit] = sq;
-            for (int blink=1; blink<=25; blink++)
+            for (int blink=1; blink<=DAY_11_NUM_BLINKS; blink++)
             {
 #ifdef DEBUG_DAY_11
                 cout << endl << "**Processing blink " << blink << endl;
@@ -156,22 +156,15 @@ namespace Day11
         }
     }
     
-    map<long long int, StoneQuantity> StoneProcessor::process_input(vector<long long int> input_values)
+    map<long long int, StoneQuantity> StoneProcessor::process_input(map<long long int, StoneQuantity> input_map, int blinks)
     {
         map<long long int, StoneQuantity> results;
         map<long long int, StoneQuantity> current_level;
         map<long long int, StoneQuantity> next_level;
         
-        for (int i=0; i<input_values.size(); i++)
-        {
-            StoneQuantity sq;
-            sq.value = input_values[i];
-            sq.quantity = 1;
-            
-            current_level[sq.value]=sq;
-        }
-
-        for (int blink=1; blink<=25; blink++)
+        current_level = input_map;
+        
+        for (int blink=1; blink<=blinks; blink++)
         {
             next_level.clear();
 #ifdef DEBUG_DAY_11
@@ -191,7 +184,7 @@ namespace Day11
 #ifdef DEBUG_DAY_11
                     cout << "  Short circuiting for value " << init_value << " and using the single-digit lookup" << endl;
 #endif
-                    merge_values_to_results(results, m_single_digit_dictionary[init_value][25-(blink-1)], init_quantity);
+                    merge_values_to_results(results, m_single_digit_dictionary[init_value][blinks-(blink-1)], init_quantity);
                     ++pos;
                     continue;
                 }
@@ -231,96 +224,6 @@ namespace Day11
         merge_values_to_results(results, current_level, 1);
         return results;
     }
-
-    map<long long int, StoneQuantity> StoneProcessor::process_input_thrice(vector<long long int> input_values)
-    {
-        map<long long int, StoneQuantity> results[3];
-        return results[3];
-
-/*
-        results[0] = process_input(input_values);
-        
-        map<long long int, StoneQuantity> tmp_results;
-        
-        map<long long int, StoneQuantity>::iterator pos = results[0].begin():
-        while (pos != results[0].end())
-        {
-            vector<long long int> tmp_val;
-            tmp_val
-            ++pos;
-        }
-        
-        for (int i=0; i<input_values.size(); i++)
-        {
-            StoneQuantity sq;
-            sq.value = input_values[i];
-            sq.quantity = 1;
-            
-            current_level[sq.value]=sq;
-        }
-
-        for (int blink=1; blink<=25; blink++)
-        {
-            next_level.clear();
-#ifdef DEBUG_DAY_11
-            cout << endl << "Processing blink " << blink << endl;
-#endif
-            map<long long int, StoneQuantity>::iterator pos = current_level.begin();
-            while (pos != current_level.end())
-            {
-                long long int init_value = pos->second.value;
-                long long int init_quantity = pos->second.quantity;
-#ifdef DEBUG_DAY_11
-                cout << " Processing value " << init_value << " with quantity " << init_quantity << endl;
-#endif
-                // short circuit any 1-digit input values. already pre-computed the results
-                if (init_value >= 0 && init_value <= 9)
-                {
-#ifdef DEBUG_DAY_11
-                    cout << "  Short circuiting for value " << init_value << " and using the single-digit lookup" << endl;
-#endif
-                    merge_values_to_results(results, m_single_digit_dictionary[init_value][25-(blink-1)], init_quantity);
-                    ++pos;
-                    continue;
-                }
-                
-                vector<StoneQuantity> after = perform_blink(init_value);
-                    
-                for (int after_pos=0; after_pos<after.size(); after_pos++)
-                {
-#ifdef DEBUG_DAY_11
-                    cout << "  After blink has value " << after[after_pos].value << " with quantity " << after[after_pos].quantity << endl;
-#endif
-                    if (next_level.find(after[after_pos].value) == next_level.end())
-                    {
-                        // not found in post-blink values; add it as a new StoneQuantity
-                        StoneQuantity sq_after;
-                        sq_after.value = after[after_pos].value;
-                        sq_after.quantity = init_quantity * after[after_pos].quantity;
-                        next_level[sq_after.value] = sq_after;
-#ifdef DEBUG_DAY_11
-                        cout << "    Setting new element with value " << sq_after.value << " with quantity " << sq_after.quantity << endl;
-#endif
-                    }
-                    else
-                    {
-                        // found in post-blink values. add quantity
-                        long long int quantity_to_add = init_quantity * after[after_pos].quantity;
-                        next_level[after[after_pos].value].quantity = next_level[after[after_pos].value].quantity + quantity_to_add;
-#ifdef DEBUG_DAY_11
-                        cout << "    Adding " << quantity_to_add << " to existing element with value " << after[after_pos].value << " resulting in quantity " << next_level[after[after_pos].value].quantity << endl;
-#endif
-                    }
-                }
-                ++pos;
-            }
-            current_level = next_level;
-        }
-        merge_values_to_results(results, current_level, 1);
-        return results;
-*/
-    }
-
 }
 
 
@@ -358,7 +261,16 @@ string AocDay11::part1(string filename, vector<string> extra_args)
     StoneProcessor processor;
     processor.build_single_digit_dictionary();
     
-    map<long long int, StoneQuantity> results = processor.process_input(data);
+    map<long long int, StoneQuantity> input_map;
+    for (int i=0; i<data.size(); i++)
+    {
+        StoneQuantity sq;
+        sq.quantity = 1;
+        sq.value = data[i];
+        input_map[sq.value] = sq;
+    }
+    
+    map<long long int, StoneQuantity> results = processor.process_input(input_map, DAY_11_PART_1_BLINKS);
     
     long long int total_stones=0;
     map<long long int, StoneQuantity>::iterator pos = results.begin();
@@ -380,7 +292,17 @@ string AocDay11::part2(string filename, vector<string> extra_args)
     StoneProcessor processor;
     processor.build_single_digit_dictionary();
     
-    map<long long int, StoneQuantity> results = processor.process_input_thrice(data);
+    
+    map<long long int, StoneQuantity> input_map;
+    for (int i=0; i<data.size(); i++)
+    {
+        StoneQuantity sq;
+        sq.quantity = 1;
+        sq.value = data[i];
+        input_map[sq.value] = sq;
+    }
+    
+    map<long long int, StoneQuantity> results = processor.process_input(input_map, DAY_11_NUM_BLINKS);
     
     long long int total_stones=0;
     map<long long int, StoneQuantity>::iterator pos = results.begin();
