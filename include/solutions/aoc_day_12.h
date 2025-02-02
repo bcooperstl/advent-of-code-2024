@@ -29,6 +29,8 @@ namespace Day12
             ~Farm();
             void display();
             void map_regions();
+            void calculate_perimeters();
+            int get_total_price();
     };
 }
 

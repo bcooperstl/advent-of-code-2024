@@ -14,6 +14,7 @@ using namespace std;
 using namespace Day12;
 
 #define NO_REGION 0
+#define MAX_REGIONS 750
 
 namespace Day12
 {
@@ -70,6 +71,11 @@ namespace Day12
         {
             pair <int, int> current = region_plots.front();
             region_plots.pop_front();
+            
+            if (m_plots[current.first][current.second].region != NO_REGION)
+            {
+                continue;
+            }
             
             m_plots[current.first][current.second].region = region_number;
 
@@ -148,6 +154,82 @@ namespace Day12
         }
     }
     
+    void Farm::calculate_perimeters()
+    {
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                cout << "Checking perimeters for row=" << y << " col=" << x << endl;
+
+                // check north
+                if ((y==0) || (m_plots[y][x].region != m_plots[y-1][x].region))
+                {
+                    m_plots[y][x].perimeter_included++;
+                    cout << " North is a permimeter" << endl;
+                }
+                // check south
+                if((y==(m_rows-1)) || (m_plots[y][x].region != m_plots[y+1][x].region))
+                {
+                    m_plots[y][x].perimeter_included++;
+                    cout << " South is a permimeter" << endl;
+                }
+                // check west
+                if ((x==0) || (m_plots[y][x].region != m_plots[y][x-1].region))
+                {
+                    m_plots[y][x].perimeter_included++;
+                    cout << " West is a permimeter" << endl;
+                }
+                // check east
+                if((x==(m_cols-1)) || (m_plots[y][x].region != m_plots[y][x+1].region))
+                {
+                    m_plots[y][x].perimeter_included++;
+                    cout << " East is a permimeter" << endl;
+                }
+
+                cout << " Total permiters is " << m_plots[y][x].perimeter_included << endl;
+            }
+        }
+    }
+    
+    
+    int Farm::get_total_price()
+    {
+        int total_price = 0;
+        int areas[MAX_REGIONS];
+        int perimeters[MAX_REGIONS];
+        for (int i=1; i<= m_num_assigned_regions; i++)
+        {
+            areas[i]=0;
+            perimeters[i]=0;
+        }
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                areas[m_plots[y][x].region]++;
+                perimeters[m_plots[y][x].region]+=m_plots[y][x].perimeter_included;
+            }
+        }
+        
+        for (int i=0; i<m_first_plots.size(); i++)
+        {
+            int row=m_first_plots[i].first;
+            int col=m_first_plots[i].second;
+            
+            int region=m_plots[row][col].region;
+            
+            cout << "Region " << region 
+                 << " with plant " << m_plots[row][col].plant
+                 << " has area " << areas[region]
+                 << " and perimeter " << perimeters[region]
+                 << " resulting in price " << areas[region] * perimeters[region] << endl;
+
+            total_price += (areas[region] * perimeters[region]);
+        }
+        
+        return total_price;
+    }
 }
 
 AocDay12::AocDay12():AocDay(12)
@@ -180,8 +262,10 @@ string AocDay12::part1(string filename, vector<string> extra_args)
     
     farm.map_regions();
     
+    farm.calculate_perimeters();
+    
     ostringstream out;
-    out << "Day 12 - Part 1 not implemented";
+    out << farm.get_total_price();
     return out.str();
 }
 
