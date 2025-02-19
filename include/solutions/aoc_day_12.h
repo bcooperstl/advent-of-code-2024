@@ -5,13 +5,22 @@
 
 #define DAY_12_MAX_LENGTH 140
 
+#define DAY_12_NORTH 0
+#define DAY_12_SOUTH 1
+#define DAY_12_WEST 2
+#define DAY_12_EAST 3
+
+#define DAY_12_YES 1
+#define DAY_12_NO 0
+
 namespace Day12
 {
     struct Plot
     {
         char plant;
         int region;
-        int perimeter_included;
+        char is_perimeter[4];
+        char is_side[4];
     };
     
     class Farm
@@ -30,7 +39,9 @@ namespace Day12
             void display();
             void map_regions();
             void calculate_perimeters();
+            void calculate_sides();
             int get_total_price();
+            int get_total_discount_price();
     };
 }
 

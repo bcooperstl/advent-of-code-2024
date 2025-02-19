@@ -41,7 +41,11 @@ namespace Day12
             {
                 m_plots[y][x].plant = data[y][x];
                 m_plots[y][x].region = 0;
-                m_plots[y][x].perimeter_included = 0;
+                for (int i=0; i<4; i++)
+                {
+                    m_plots[y][x].is_perimeter[i] = DAY_12_NO;
+                    m_plots[y][x].is_side[i] = DAY_12_NO;
+                }
             }
         }        
     }
@@ -160,38 +164,164 @@ namespace Day12
         {
             for (int x=0; x<m_cols; x++)
             {
+#ifdef DEBUG_DAY_12
                 cout << "Checking perimeters for row=" << y << " col=" << x << endl;
-
+#endif
                 // check north
                 if ((y==0) || (m_plots[y][x].region != m_plots[y-1][x].region))
                 {
-                    m_plots[y][x].perimeter_included++;
+                    m_plots[y][x].is_perimeter[DAY_12_NORTH]=DAY_12_YES;
+#ifdef DEBUG_DAY_12
                     cout << " North is a permimeter" << endl;
+#endif
                 }
                 // check south
                 if((y==(m_rows-1)) || (m_plots[y][x].region != m_plots[y+1][x].region))
                 {
-                    m_plots[y][x].perimeter_included++;
+                    m_plots[y][x].is_perimeter[DAY_12_SOUTH]=DAY_12_YES;
+#ifdef DEBUG_DAY_12
                     cout << " South is a permimeter" << endl;
+#endif
                 }
                 // check west
                 if ((x==0) || (m_plots[y][x].region != m_plots[y][x-1].region))
                 {
-                    m_plots[y][x].perimeter_included++;
+                    m_plots[y][x].is_perimeter[DAY_12_WEST]=DAY_12_YES;
+#ifdef DEBUG_DAY_12
                     cout << " West is a permimeter" << endl;
+#endif
                 }
                 // check east
                 if((x==(m_cols-1)) || (m_plots[y][x].region != m_plots[y][x+1].region))
                 {
-                    m_plots[y][x].perimeter_included++;
+                    m_plots[y][x].is_perimeter[DAY_12_EAST]=DAY_12_YES;
+#ifdef DEBUG_DAY_12
                     cout << " East is a permimeter" << endl;
+#endif
                 }
 
-                cout << " Total permiters is " << m_plots[y][x].perimeter_included << endl;
+#ifdef DEBUG_DAY_12
+                int sum=0;
+                for (int i=0; i<4; i++)
+                {
+                    sum+=m_plots[y][x].is_perimeter[i];
+                }
+                cout << " Total perimeters is " << sum << endl;
+#endif
             }
         }
     }
     
+    void Farm::calculate_sides()
+    {
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+#ifdef DEBUG_DAY_12
+                cout << "Checking sides for row=" << y << " col=" << x << endl;
+#endif
+
+                // check north
+                if (m_plots[y][x].is_perimeter[DAY_12_NORTH] == DAY_12_YES)
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " North is a permimeter ";
+#endif
+                    if ((x==0) || // at the left
+                        (m_plots[y][x].region != m_plots[y][x-1].region) || // different regions
+                        ((m_plots[y][x].region == m_plots[y][x-1].region) && (m_plots[y][x-1].is_perimeter[DAY_12_NORTH] == DAY_12_NO))) // left is not perimeter
+                    {
+                        m_plots[y][x].is_side[DAY_12_NORTH] = DAY_12_YES;
+#ifdef DEBUG_DAY_12
+                        cout << " and is a new side" << endl;
+#endif
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_12
+                        cout << " but is not a new side" << endl;
+#endif
+                    }
+                }
+                // check south
+                if(m_plots[y][x].is_perimeter[DAY_12_SOUTH] == DAY_12_YES)
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " South is a permimeter ";
+#endif
+                    if ((x==0) || // at the left
+                        (m_plots[y][x].region != m_plots[y][x-1].region) || // different regions
+                        ((m_plots[y][x].region == m_plots[y][x-1].region) && (m_plots[y][x-1].is_perimeter[DAY_12_SOUTH] == DAY_12_NO))) // left is not perimeter
+                    {
+                        m_plots[y][x].is_side[DAY_12_SOUTH] = DAY_12_YES;
+#ifdef DEBUG_DAY_12
+                        cout << " and is a new side" << endl;
+#endif
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_12
+                        cout << " but is not a new side" << endl;
+#endif
+                    }
+                }
+                // check west
+                if (m_plots[y][x].is_perimeter[DAY_12_WEST] == DAY_12_YES)
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " West is a permimeter ";
+#endif
+                    if ((y==0) || // at the top
+                        (m_plots[y][x].region != m_plots[y-1][x].region) || // different regions
+                        ((m_plots[y][x].region == m_plots[y-1][x].region) && (m_plots[y-1][x].is_perimeter[DAY_12_WEST] == DAY_12_NO))) // top is not perimeter
+                    {
+                        m_plots[y][x].is_side[DAY_12_WEST] = DAY_12_YES;
+#ifdef DEBUG_DAY_12
+                        cout << " and is a new side" << endl;
+#endif
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_12
+                        cout << " but is not a new side" << endl;
+#endif
+                    }
+                }
+                // check east
+                if(m_plots[y][x].is_perimeter[DAY_12_EAST] == DAY_12_YES)
+                {
+#ifdef DEBUG_DAY_12
+                    cout << " East is a permimeter ";
+#endif
+                    if ((y==0) || // at the top
+                        (m_plots[y][x].region != m_plots[y-1][x].region) || // different regions
+                        ((m_plots[y][x].region == m_plots[y-1][x].region) && (m_plots[y-1][x].is_perimeter[DAY_12_EAST] == DAY_12_NO))) // top is not perimeter
+                    {
+                        m_plots[y][x].is_side[DAY_12_EAST] = DAY_12_YES;
+#ifdef DEBUG_DAY_12
+                        cout << " and is a new side" << endl;
+#endif
+                    }
+                    else
+                    {
+#ifdef DEBUG_DAY_12
+                        cout << " but is not a new side" << endl;
+#endif
+                    }
+                }
+
+#ifdef DEBUG_DAY_12
+                int sum=0;
+                for (int i=0; i<4; i++)
+                {
+                    sum+=m_plots[y][x].is_side[i];
+                }
+                cout << " Total sides is " << sum << endl;
+#endif
+            }
+        }
+    }
     
     int Farm::get_total_price()
     {
@@ -208,7 +338,10 @@ namespace Day12
             for (int x=0; x<m_cols; x++)
             {
                 areas[m_plots[y][x].region]++;
-                perimeters[m_plots[y][x].region]+=m_plots[y][x].perimeter_included;
+                perimeters[m_plots[y][x].region]+=(  m_plots[y][x].is_perimeter[DAY_12_NORTH]
+                                                   + m_plots[y][x].is_perimeter[DAY_12_SOUTH]
+                                                   + m_plots[y][x].is_perimeter[DAY_12_WEST]
+                                                   + m_plots[y][x].is_perimeter[DAY_12_EAST]);
             }
         }
         
@@ -219,17 +352,63 @@ namespace Day12
             
             int region=m_plots[row][col].region;
             
+#ifdef DEBUG_DAY_12
             cout << "Region " << region 
                  << " with plant " << m_plots[row][col].plant
                  << " has area " << areas[region]
                  << " and perimeter " << perimeters[region]
                  << " resulting in price " << areas[region] * perimeters[region] << endl;
+#endif
 
             total_price += (areas[region] * perimeters[region]);
         }
         
         return total_price;
     }
+
+    int Farm::get_total_discount_price()
+    {
+        int total_price = 0;
+        int areas[MAX_REGIONS];
+        int sides[MAX_REGIONS];
+        for (int i=1; i<= m_num_assigned_regions; i++)
+        {
+            areas[i]=0;
+            sides[i]=0;
+        }
+        for (int y=0; y<m_rows; y++)
+        {
+            for (int x=0; x<m_cols; x++)
+            {
+                areas[m_plots[y][x].region]++;
+                sides[m_plots[y][x].region]+=(  m_plots[y][x].is_side[DAY_12_NORTH]
+                                              + m_plots[y][x].is_side[DAY_12_SOUTH]
+                                              + m_plots[y][x].is_side[DAY_12_WEST]
+                                              + m_plots[y][x].is_side[DAY_12_EAST]);
+            }
+        }
+        
+        for (int i=0; i<m_first_plots.size(); i++)
+        {
+            int row=m_first_plots[i].first;
+            int col=m_first_plots[i].second;
+            
+            int region=m_plots[row][col].region;
+            
+#ifdef DEBUG_DAY_12
+            cout << "Region " << region 
+                 << " with plant " << m_plots[row][col].plant
+                 << " has area " << areas[region]
+                 << " and sides " << sides[region]
+                 << " resulting in price " << areas[region] * sides[region] << endl;
+#endif
+
+            total_price += (areas[region] * sides[region]);
+        }
+        
+        return total_price;
+    }
+
 }
 
 AocDay12::AocDay12():AocDay(12)
@@ -272,8 +451,16 @@ string AocDay12::part1(string filename, vector<string> extra_args)
 string AocDay12::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
-
+    
+    Farm farm(data);
+    
+    farm.display();
+    
+    farm.map_regions();
+    farm.calculate_perimeters();
+    farm.calculate_sides();
+    
     ostringstream out;
-    out << "Day 12 - Part 2 not implemented";
+    out << farm.get_total_discount_price();
     return out.str();
 }
