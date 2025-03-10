@@ -11,6 +11,9 @@
 #define BUTTON_A_COST 3
 #define BUTTON_B_COST 1
 
+#define CORRECTION 10000000000000ll // long long
+
+
 using namespace std;
 using namespace Day13;
 
@@ -64,6 +67,16 @@ namespace Day13
         cout << "Button A: x=" << m_buttons[0].x << " y=" << m_buttons[0].y << endl;
         cout << "Button B: x=" << m_buttons[1].x << " y=" << m_buttons[1].y << endl;
         cout << "Prize: x=" << m_prize_x << " y=" << m_prize_y << endl;
+#endif
+    }
+    
+    void Machine::load_machine_corrected(string button_a, string button_b, string prize)
+    {
+        load_machine(button_a, button_b, prize);
+        m_prize_x+=CORRECTION;
+        m_prize_y+=CORRECTION;
+#ifdef DEBUG_DAY_13
+        cout << "Corrected Prize: x=" << m_prize_x << " y=" << m_prize_y << endl;
 #endif
     }
     
@@ -141,6 +154,30 @@ namespace Day13
         return (solution_found ? best_cost : 0);
     }
     
+    long long int Machine::find_cheapest_cost_to_win_corrected()
+    {
+#ifdef DEBUG_DAY_13
+        cout << "Searching for solution to prize x=" << m_prize_x << " y=" << m_prize_y << endl;
+#endif
+        long long int presses_a = (((m_prize_x * m_buttons[1].y) - (m_prize_y * m_buttons[1].x))/((m_buttons[0].x*m_buttons[1].y)-(m_buttons[0].y*m_buttons[1].x)));
+        long long int presses_b = ((m_prize_y - (presses_a*m_buttons[0].y))/m_buttons[1].y);
+        
+        long long int calc_x = presses_a * m_buttons[0].x + presses_b * m_buttons[1].x;
+        long long int calc_y = presses_a * m_buttons[0].y + presses_b * m_buttons[1].y;
+        
+        cout << "Test solution is " << presses_a << " presses of a and " << presses_b << " presses of b" << " resulting in x=" << calc_x << " and y=" << calc_y << endl;
+        
+        if (calc_x == m_prize_x && calc_y == m_prize_y)
+        {
+            long long int cost = ((m_buttons[0].cost * presses_a) + (m_buttons[1].cost * presses_b));
+            cout << "MATCHING answer found. Cost is " << cost << endl;
+            return cost;
+        }
+        cout << "Match not found" << endl;
+        return 0;
+    }
+
+
 }
 
 AocDay13::AocDay13():AocDay(13)
@@ -176,6 +213,19 @@ vector<Machine> AocDay13::create_machines(vector<string> input)
     return machines;
 }
 
+vector<Machine> AocDay13::create_machines_corrected(vector<string> input)
+{
+    vector<Machine> machines;
+    for (int i=0; i<input.size(); i+=4)
+    {
+        cout << "Machine " << i/4 << ":" << endl;
+        Machine machine;
+        machine.load_machine_corrected(input[i], input[i+1], input[i+2]);
+        machines.push_back(machine);
+    }
+    return machines;
+}
+
 string AocDay13::part1(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
@@ -198,8 +248,18 @@ string AocDay13::part1(string filename, vector<string> extra_args)
 string AocDay13::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
-
+    
     ostringstream out;
-    out << "Day 13 - Part 2 not implemented";
+    
+    vector<Machine> machines = create_machines_corrected(data);
+    
+    long long int sum_of_best_costs = 0;
+    
+    for (int i=0; i<machines.size(); i++)
+    {
+        sum_of_best_costs+=machines[i].find_cheapest_cost_to_win_corrected();
+    }
+    
+    out << sum_of_best_costs;
     return out.str();
 }
