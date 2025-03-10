@@ -23,6 +23,7 @@ namespace Day13
             Machine();
             ~Machine();
             void load_machine(string button_a, string button_b, string prize);
+            int find_cheapest_cost_to_win();
     };
 }
 
