@@ -75,7 +75,7 @@ namespace Day14
             m_robots[i].pos_x = (m_robots[i].pos_x + (num_moves * vel_x)) % m_width;
             m_robots[i].pos_y = (m_robots[i].pos_y + (num_moves * vel_y)) % m_height;
 #ifdef DEBUG_DAY_14
-            cout << " results in " << m_robots[i].pos_x << "," << m_robots[i].pos_y;
+            cout << " results in " << m_robots[i].pos_x << "," << m_robots[i].pos_y << endl;
 #endif
         }
         return;
@@ -84,8 +84,8 @@ namespace Day14
     int World::get_safety_factor()
     {
         int quad_count[4] = {0,0,0,0};
-        int mid_width_val = m_width/2 + 1;
-        int mid_height_val = m_height/2 + 1;
+        int mid_width_val = m_width/2;
+        int mid_height_val = m_height/2;
 
 #ifdef DEBUG_DAY_14
         cout << "Width is " << m_width << ". Width halves go from 0 to " << mid_width_val-1 << " and " << mid_width_val+1 << " to " << m_width-1 << endl;
