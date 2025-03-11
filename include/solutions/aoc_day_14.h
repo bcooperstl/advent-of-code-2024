@@ -25,6 +25,7 @@ namespace Day14
             void load_robots(vector<vector<string>> data);
             void move_robots(int num_moves);
             int get_safety_factor();
+            void display();
     };      
 }
 

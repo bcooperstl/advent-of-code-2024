@@ -151,7 +151,31 @@ namespace Day14
             }
         }
         return quad_count[0] * quad_count[1] * quad_count[2] * quad_count[3];
-    }   
+    }
+    
+    void World::display()
+    {
+        char data[DEFAULT_HEIGHT][DEFAULT_WIDTH+1];
+        for (int i=0; i<m_height; i++)
+        {
+            for (int j=0; j<m_width; j++)
+            {
+                data[i][j] = ' ';
+            }
+            data[i][m_width]='\0';
+        }
+        
+        for (int k=0; k<m_robots.size(); k++)
+        {
+            data[m_robots[k].pos_y][m_robots[k].pos_x]='*';
+        }
+        
+        for (int i=0; i<m_height; i++)
+        {
+            cout << data[i] << endl;
+        }
+        cout << endl;
+    }
 }
 
 
@@ -203,8 +227,31 @@ string AocDay14::part1(string filename, vector<string> extra_args)
 string AocDay14::part2(string filename, vector<string> extra_args)
 {
     vector<vector<string>> data = read_input(filename);
-
+    
+    int width = DEFAULT_WIDTH;
+    int height = DEFAULT_HEIGHT;
+    
+    // extra args, if given, are width and height in that order
+    if (extra_args.size() == 2)
+    {
+        width = strtol(extra_args[0].c_str(), NULL, 10);
+        height = strtol(extra_args[1].c_str(), NULL, 10);
+    }
+    
+    World world(width, height);
+    
+    world.load_robots(data);
+/*
+    for (int i=1; i<=10000; i++)
+    {
+        cout << "Second " << i << endl;
+        world.move_robots(1);
+        world.display();
+    }
+*/
+    world.move_robots(7603);
+    world.display();
     ostringstream out;
-    out << "Day 14 - Part 2 not implemented";
+    out << 7603;
     return out.str();
 }
