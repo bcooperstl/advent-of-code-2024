@@ -2,7 +2,7 @@ DEBUG=
 #Uncomment the below line to dispaly the runner debug
 #DEBUG+= -DDEBUG_RUNNER
 #Template for other debug flags to be added later
-#DEBUG+= -DDEBUG_DAY_14
+DEBUG+= -DDEBUG_DAY_15 -DDEBUG_DAY_15_EVERY_STEP
 
 #If adding another include directory, be sure to add it here
 CPPFLAGS=-g ${DEBUG} -Iinclude/common -Iinclude/runner -Iinclude/screen -Iinclude/solutions
