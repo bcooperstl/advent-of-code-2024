@@ -15,11 +15,13 @@ namespace Day15
             int m_cols;
             int m_robot_row;
             int m_robot_col;
+            bool test_and_move(char direction, int row, int col);
         public:
             FishMap();
             ~FishMap();
             void load_map(vector<string> data, int num_rows);
             void display_map();
+            void perform_robot_move(char direction);
     };
 }
 
