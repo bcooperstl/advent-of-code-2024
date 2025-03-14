@@ -180,6 +180,22 @@ namespace Day15
 #endif
     }
     
+    int FishMap::get_gps_score_total()
+    {
+        int total = 0;
+        for (int i=0; i<m_rows; i++)
+        {
+            for (int j=0; j<m_cols; j++)
+            {
+                if (m_data[i][j] == MAP_BOX)
+                {
+                    total += ((100 * i) + j);
+                }
+            }
+        }
+        return total;
+    }
+    
 }
 
 AocDay15::AocDay15():AocDay(15)
@@ -229,7 +245,7 @@ string AocDay15::part1(string filename, vector<string> extra_args)
     }
     
     ostringstream out;
-    out << "Day 15 - Part 1 not implemented";
+    out << map.get_gps_score_total();
     return out.str();
 }
 

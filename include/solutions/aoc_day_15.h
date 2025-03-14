@@ -22,6 +22,7 @@ namespace Day15
             void load_map(vector<string> data, int num_rows);
             void display_map();
             void perform_robot_move(char direction);
+            int get_gps_score_total();
     };
 }
 
