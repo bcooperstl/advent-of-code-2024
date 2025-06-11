@@ -602,16 +602,9 @@ namespace Day15
         int total = 0;
         for (int i=0; i<m_rows; i++)
         {
-            for (int j=0; j<m_cols/2; j++)
+            for (int j=0; j<m_cols; j++)
             {
                 if (m_data[i][j] == MAP_BOX_LEFT)
-                {
-                    total += ((100 * i) + j);
-                }
-            }
-            for (int j=m_cols/2; j<m_cols; j++)
-            {
-                if (m_data[i][j] == MAP_BOX_RIGHT)
                 {
                     total += ((100 * i) + j);
                 }
