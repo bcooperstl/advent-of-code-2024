@@ -257,6 +257,7 @@ namespace Day15
                         break;
                 }
             }
+            m_data[i][cols*2]='\0';
         }
     }
     
