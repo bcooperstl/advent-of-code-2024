@@ -407,7 +407,17 @@ namespace Day15
     
     void ExpandedFishMap::move(char direction, int row, int col)
     {
-        int first_open;
+        int first_open, current_row;
+        bool work_added;
+        bool items_to_move[50][100];
+        for (int i=0; i<50; i++)
+        {
+            for (int j=0; j<100; j++)
+            {
+                items_to_move[i][j] = false;
+            }
+        }
+        
         switch (direction)
         {
             case DIRECTION_LEFT:
@@ -442,185 +452,119 @@ namespace Day15
                 }
                 m_data[row][col] = MAP_OPEN;
                 break;
-        }
-/*            case DIRECTION_UP:
-                next_row = row-1;
-                if (m_data[next_row][next_col] == MAP_OPEN)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = true;
-                }
-                else if (m_data[next_row][next_col] == MAP_WALL)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = false;
-                }
-                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
-                }
-                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
-                }                   
-                else
-                {
-                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
-                    can_move = false;
-                }
-                break;
-            case DIRECTION_DOWN:
-                next_row = row+1;
-                if (m_data[next_row][next_col] == MAP_OPEN)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = true;
-                }
-                else if (m_data[next_row][next_col] == MAP_WALL)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = false;
-                }
-                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
-                }
-                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
-                {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
-                }                   
-                else
-                {
-                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
-                    can_move = false;
-                }
-                break;
-        }
-            
-        return can_move;
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        int next_row;
-        int next_col;
-        switch (direction)
-        {
             case DIRECTION_UP:
-                next_row = row-1;
-                next_col = col;
+                items_to_move[row][col] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                cout << "Item to move " << m_data[row][col] << " at row=" << row << " col=" << col << endl;
+#endif
+                
+                current_row = row;
+                work_added = true;
+                while (work_added == true)
+                {
+                    work_added = false;
+                    for (int i=0; i<100; i++)
+                    {
+                        if (items_to_move[current_row][i] == true)
+                        {
+                            if (m_data[current_row-1][i] == MAP_BOX_LEFT)
+                            {
+                                work_added = true;
+                                items_to_move[current_row-1][i] = true;
+                                items_to_move[current_row-1][i+1] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                                cout << "Item to move " << m_data[current_row-1][i] << " at row=" << current_row-1 << " col=" << i << endl;
+                                cout << "Item to move " << m_data[current_row-1][i+1] << " at row=" << current_row-1 << " col=" << i+1 << endl;
+#endif
+                            } 
+                            if (m_data[current_row-1][i] == MAP_BOX_RIGHT)
+                            {
+                                work_added = true;
+                                items_to_move[current_row-1][i-1] = true;
+                                items_to_move[current_row-1][i] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                                cout << "Item to move " << m_data[current_row-1][i-1] << " at row=" << current_row-1 << " col=" << i-1 << endl;
+                                cout << "Item to move " << m_data[current_row-1][i] << " at row=" << current_row-1 << " col=" << i << endl;
+#endif
+                            } 
+                        }
+                    }
+                    current_row--;
+                }
+                current_row++;
+                while (current_row <= row)
+                {
+                    for (int i=0; i<100; i++)
+                    {
+                        if (items_to_move[current_row][i] == true)
+                        {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                            cout << "Moving " << m_data[current_row][i] << " at row=" << current_row << " col=" << i << " to " << m_data[current_row-1][i] << " at row=" << current_row-1 << " col=" << i << endl;
+#endif
+                            m_data[current_row-1][i] = m_data[current_row][i];
+                            m_data[current_row][i] = MAP_OPEN;
+                        }
+                    }
+                    current_row++;
+                }
                 break;
             case DIRECTION_DOWN:
-                next_row = row+1;
-                next_col = col;
+                items_to_move[row][col] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                cout << "Item to move " << m_data[row][col] << " at row=" << row << " col=" << col << endl;
+#endif
+                
+                current_row = row;
+                work_added = true;
+                while (work_added == true)
+                {
+                    work_added = false;
+                    for (int i=0; i<100; i++)
+                    {
+                        if (items_to_move[current_row][i] == true)
+                        {
+                            if (m_data[current_row+1][i] == MAP_BOX_LEFT)
+                            {
+                                work_added = true;
+                                items_to_move[current_row+1][i] = true;
+                                items_to_move[current_row+1][i+1] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                                cout << "Item to move " << m_data[current_row+1][i] << " at row=" << current_row+1 << " col=" << i << endl;
+                                cout << "Item to move " << m_data[current_row+1][i+1] << " at row=" << current_row+1 << " col=" << i+1 << endl;
+#endif
+                            } 
+                            if (m_data[current_row+1][i] == MAP_BOX_RIGHT)
+                            {
+                                work_added = true;
+                                items_to_move[current_row+1][i-1] = true;
+                                items_to_move[current_row+1][i] = true;
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                                cout << "Item to move " << m_data[current_row+1][i-1] << " at row=" << current_row+1 << " col=" << i-1 << endl;
+                                cout << "Item to move " << m_data[current_row+1][i] << " at row=" << current_row+1 << " col=" << i << endl;
+#endif
+                            } 
+                        }
+                    }
+                    current_row++;
+                }
+                current_row--;
+                while (current_row >= row)
+                {
+                    for (int i=0; i<100; i++)
+                    {
+                        if (items_to_move[current_row][i] == true)
+                        {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                            cout << "Moving " << m_data[current_row][i] << " at row=" << current_row << " col=" << i << " to " << m_data[current_row+1][i] << " at row=" << current_row+1 << " col=" << i << endl;
+#endif
+                            m_data[current_row+1][i] = m_data[current_row][i];
+                            m_data[current_row][i] = MAP_OPEN;
+                        }
+                    }
+                    current_row--;
+                }
                 break;
-            case DIRECTION_LEFT:
-                next_row = row;
-                next_col = col-1;
-                break;
-            case DIRECTION_RIGHT:
-                next_row = row;
-                next_col = col+1;
-                break;
-            default:
-                cerr << "Invalid direction " << direction << " is not a valid direction" << endl;
-                return;
         }
-
-        if (m_data[next_row][next_col] == MAP_OPEN)
-        {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Moving " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-            m_data[next_row][next_col] = m_data[row][col];
-            m_data[row][col] = MAP_OPEN;
-            return;
-        }
-        
-        if (m_data[next_row][next_col] == MAP_WALL)
-        {
-            return;
-        }
-        
-        if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)
-        {
-#ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Moving " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-            move(direction, next_row, next_col);
-            m_data[next_row][next_col] = m_data[row][col];
-            m_data[row][col] = MAP_OPEN;
-        }
-        else
-        {
-            int other_next_col;
-            if (m_data[next_row][next_col] == MAP_BOX_LEFT)
-            {
-                other_next_col = next_col + 1;
-            }
-            else if (m_data[next_row][next_col] = MAP_BOX_RIGHT)
-            {
-                other_next_col = next_col - 1;
-            }
-
-#ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Moving " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << next_col << endl;
-#endif
-#ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Moving " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << other_next_col << endl;
-#endif
-            move(direction, next_row, next_col);
-            move(direction, next_row, other_next_col);
-            m_data[next_row][next_col] = m_data[row][col];
-            m_data[row][col] = MAP_OPEN;
-            m_data[next_row][other_next_col] = m_data[row][other_next_col];
-            m_data[row][other_next_col] = MAP_OPEN;
-        }
-  */      
         return;
     }
     
