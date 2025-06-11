@@ -262,89 +262,278 @@ namespace Day15
     
     bool ExpandedFishMap::test(char direction, int row, int col)
     {
-        int next_row;
-        int next_col;
+        bool can_move = false;
+        int next_row = row;
+        int next_col = col;
         switch (direction)
         {
+            case DIRECTION_LEFT:
+                next_col = col-1;
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    next_col--;
+                    can_move = test(direction, next_row, next_col);
+                }
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
+                break;
+            case DIRECTION_RIGHT:
+                next_col = col+1;
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    next_col++;
+                    can_move = test(direction, next_row, next_col);
+                }
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
+                break;
             case DIRECTION_UP:
                 next_row = row-1;
-                next_col = col;
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
+                }                   
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
                 break;
             case DIRECTION_DOWN:
                 next_row = row+1;
-                next_col = col;
-                break;
-            case DIRECTION_LEFT:
-                next_row = row;
-                next_col = col-1;
-                break;
-            case DIRECTION_RIGHT:
-                next_row = row;
-                next_col = col+1;
-                break;
-            default:
-                cerr << "Invalid direction " << direction << " is not a valid direction" << endl;
-                return false;
-        }
-
-        if (m_data[next_row][next_col] == MAP_OPEN)
-        {
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
 #ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Can move " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << next_col << endl;
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
 #endif
-            return true;
-        }
-        else if (m_data[next_row][next_col] == MAP_WALL)
-        {
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
 #ifdef DEBUG_DAY_15_EVERY_STEP
-            cout << "Cannot move " << m_data[row][col] 
-                 << " at row=" << row << " col=" << col
-                 << " to " << m_data[next_row][next_col] 
-                 << " at row=" << next_row << " col=" << next_col << endl;
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
 #endif
-            return false;
-        }
-        
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
+                {
 #ifdef DEBUG_DAY_15_EVERY_STEP
-        cout << "Testing move " << m_data[row][col] 
-             << " at row=" << row << " col=" << col
-             << " to " << m_data[next_row][next_col] 
-             << " at row=" << next_row << " col=" << next_col << endl;
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
 #endif
-
-        bool can_move;
-        if (direction == DIRECTION_LEFT || direction == DIRECTION_RIGHT)
-        {
-            can_move = test(direction, next_row, next_col);
+                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
+                }                   
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
+                break;
         }
-        else
-        {
-            int other_next_col;
-            if (m_data[next_row][next_col] == MAP_BOX_LEFT)
-            {
-                other_next_col = next_col + 1;
-            }
-            else if (m_data[next_row][next_col] = MAP_BOX_RIGHT)
-            {
-                other_next_col = next_col - 1;
-            }
-            else
-            {
-                cerr << "Invalid item " << m_data[next_row][next_col] << endl;
-                return false;
-            }
-            can_move = test(direction, next_row, next_col) && test(direction, next_row, other_next_col);
-        }
-        
+            
         return can_move;
     }
         
     
     void ExpandedFishMap::move(char direction, int row, int col)
     {
+        int first_open;
+        switch (direction)
+        {
+            case DIRECTION_LEFT:
+                first_open = col - 1;
+                while (m_data[row][first_open] != MAP_OPEN)
+                {
+                    first_open--;
+                }
+                
+                for (int curr=first_open+1; curr<=col; curr++)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Moving " << m_data[row][curr] << " at row=" << row << " col=" << curr << " to " << m_data[row][curr-1] << " at row=" << row << " col=" << curr-1 << endl;
+#endif
+                    m_data[row][curr-1] = m_data[row][curr];
+                }
+                m_data[row][col] = MAP_OPEN;
+                break;
+            case DIRECTION_RIGHT:
+                first_open = col + 1;
+                while (m_data[row][first_open] != MAP_OPEN)
+                {
+                    first_open++;
+                }
+                
+                for (int curr=first_open-1; curr>=col; curr--)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Moving " << m_data[row][curr] << " at row=" << row << " col=" << curr << " to " << m_data[row][curr+1] << " at row=" << row << " col=" << curr+1 << endl;
+#endif
+                    m_data[row][curr+1] = m_data[row][curr];
+                }
+                m_data[row][col] = MAP_OPEN;
+                break;
+        }
+/*            case DIRECTION_UP:
+                next_row = row-1;
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
+                }                   
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
+                break;
+            case DIRECTION_DOWN:
+                next_row = row+1;
+                if (m_data[next_row][next_col] == MAP_OPEN)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Can move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = true;
+                }
+                else if (m_data[next_row][next_col] == MAP_WALL)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Cannot move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = false;
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_LEFT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col) && test(direction, next_row, next_col+1));
+                }
+                else if (m_data[next_row][next_col] == MAP_BOX_RIGHT)
+                {
+#ifdef DEBUG_DAY_15_EVERY_STEP
+                    cout << "Testing move " << m_data[row][col] << " at row=" << row << " col=" << col << " to " << m_data[next_row][next_col] << " at row=" << next_row << " col=" << next_col << endl;
+#endif
+                    can_move = (test(direction, next_row, next_col-1) && test(direction, next_row, next_col));
+                }                   
+                else
+                {
+                    cerr << "Invalid item " << m_data[next_row][next_col] << endl;
+                    can_move = false;
+                }
+                break;
+        }
+            
+        return can_move;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         int next_row;
         int next_col;
         switch (direction)
@@ -418,20 +607,20 @@ namespace Day15
                  << " to " << m_data[next_row][next_col] 
                  << " at row=" << next_row << " col=" << next_col << endl;
 #endif
-            move(direction, next_row, next_col);
-            m_data[next_row][next_col] = m_data[row][col];
-            m_data[row][col] = MAP_OPEN;
 #ifdef DEBUG_DAY_15_EVERY_STEP
             cout << "Moving " << m_data[row][col] 
                  << " at row=" << row << " col=" << col
                  << " to " << m_data[next_row][next_col] 
                  << " at row=" << next_row << " col=" << other_next_col << endl;
 #endif
+            move(direction, next_row, next_col);
             move(direction, next_row, other_next_col);
+            m_data[next_row][next_col] = m_data[row][col];
+            m_data[row][col] = MAP_OPEN;
             m_data[next_row][other_next_col] = m_data[row][other_next_col];
             m_data[row][other_next_col] = MAP_OPEN;
         }
-        
+  */      
         return;
     }
     
