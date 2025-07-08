@@ -387,7 +387,6 @@ namespace Day16
         while (find_next_cell(row, col) == true)
         {
             process_cell(row, col);
-            display_maze();
         }
         return m_maze[m_end_row][m_end_col].processed;
     }
@@ -427,9 +426,9 @@ string AocDay16::part1(string filename, vector<string> extra_args)
     maze.load_maze(data);
     maze.display_maze();
     maze.process_maze();
-    
+    maze.display_maze();
     ostringstream out;
-    out << maze.get_end_score();;
+    out << maze.get_end_score();
     return out.str();
 }
 
