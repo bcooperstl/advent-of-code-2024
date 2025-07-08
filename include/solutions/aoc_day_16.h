@@ -3,6 +3,34 @@
 
 #include "aoc_day.h"
 
+#define MAZE_MAX_LENGTH 142
+
+namespace Day16
+{
+    struct MazeCell
+    {
+        char symbol;
+        int best_score_value;
+        bool best_score_direction[4];
+        bool processed;
+    };
+    
+    class Maze
+    {
+        private:
+            MazeCell m_maze[MAZE_MAX_LENGTH][MAZE_MAX_LENGTH];
+            int m_rows;
+            int m_cols;
+            int m_end_row;
+            int m_end_col;
+        public:
+            Maze();
+            ~Maze();
+            void load_maze(vector<string> data);
+            void display_maze();
+    };
+}
+
 class AocDay16 : public AocDay
 {
     private:
