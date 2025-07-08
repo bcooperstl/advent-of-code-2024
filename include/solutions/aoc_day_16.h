@@ -31,6 +31,7 @@ namespace Day16
             void load_maze(vector<string> data);
             void display_maze();
             bool process_maze();
+            int get_end_score();
     };
 }
 

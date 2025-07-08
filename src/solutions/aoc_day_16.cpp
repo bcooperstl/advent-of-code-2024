@@ -391,7 +391,11 @@ namespace Day16
         }
         return m_maze[m_end_row][m_end_col].processed;
     }
-        
+    
+    int Maze::get_end_score()
+    {
+        return m_maze[m_end_row][m_end_col].best_score_value;
+    }
 }
 
 AocDay16::AocDay16():AocDay(16)
@@ -425,7 +429,7 @@ string AocDay16::part1(string filename, vector<string> extra_args)
     maze.process_maze();
     
     ostringstream out;
-    out << "Day 16 - Part 1 not implemented";
+    out << maze.get_end_score();;
     return out.str();
 }
 
