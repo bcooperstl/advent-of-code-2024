@@ -23,11 +23,14 @@ namespace Day16
             int m_cols;
             int m_end_row;
             int m_end_col;
+            bool find_next_cell(int & next_row, int & next_col);
+            void process_cell(int row, int col);
         public:
             Maze();
             ~Maze();
             void load_maze(vector<string> data);
             void display_maze();
+            bool process_maze();
     };
 }
 
