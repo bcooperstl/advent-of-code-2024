@@ -161,6 +161,11 @@ string AocDay16::part1(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
     
+    Maze maze;
+    
+    maze.load_maze(data);
+    maze.display_maze();
+    
     ostringstream out;
     out << "Day 16 - Part 1 not implemented";
     return out.str();
