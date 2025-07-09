@@ -55,49 +55,53 @@ namespace Day16
         {
             for (int col=0; col<m_cols; col++)
             {
-                m_maze[row][col].symbol = data[row][col];
-                m_maze[row][col].processed_best_seats = false;
-                m_maze[row][col].best_seat = false;
-                switch (m_maze[row][col].symbol)
+                for (int dir=0; dir<NUM_DIRECTIONS; dir++)
                 {
-                    case MAZE_WALL:
-                        m_maze[row][col].processed = true;
-                        m_maze[row][col].best_score_value = INT_MAX;
-                        break;
-                    case MAZE_START:
-                        m_maze[row][col].processed = false;
-                        m_maze[row][col].best_score_value = 0;
-                        m_maze[row][col].best_score_direction[DIRECTION_UP] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_DOWN] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_LEFT] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_RIGHT] = true;
-                        m_start_row = row;
-                        m_start_col = col;
+                    m_maze[dir][row][col].symbol = data[row][col];
+                    m_maze[dir][row][col].processed_best_seats = false;
+                    m_maze[dir][row][col].best_seat = false;
+                    switch (m_maze[dir][row][col].symbol)
+                    {
+                        case MAZE_WALL:
+                            m_maze[dir][row][col].processed = true;
+                            m_maze[dir][row][col].best_score_value = INT_MAX;
+                            break;
+                        case MAZE_START:
+                            m_maze[dir][row][col].processed = false;
+                            if (dir == DIRECTION_RIGHT)
+                            {
+                                m_maze[dir][row][col].best_score_value = 0;
+                            }
+                            else
+                            {
+                                m_maze[dir][row][col].best_score_value = INT_MAX;
+                            }
+                            if (dir == 0)
+                            {
+                                m_start_row = row;
+                                m_start_col = col;
 #ifdef DEBUG_DAY_16
-                        cout << "Start found at row=" << row << " col=" << col << endl;
+                                cout << "Start found at row=" << row << " col=" << col << endl;
 #endif                        
+                            }
                         break;
                     case MAZE_END:
-                        m_maze[row][col].processed = false;
-                        m_maze[row][col].best_score_value = INT_MAX;
-                        m_maze[row][col].best_score_direction[DIRECTION_UP] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_DOWN] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_LEFT] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_RIGHT] = false;
-                        m_end_row = row;
-                        m_end_col = col;
+                        m_maze[dir][row][col].processed = false;
+                        m_maze[dir][row][col].best_score_value = INT_MAX;
+                        if (dir==0)
+                        {
+                            m_end_row = row;
+                            m_end_col = col;
 #ifdef DEBUG_DAY_16
-                        cout << "End found at row=" << row << " col=" << col << endl;
+                            cout << "End found at row=" << row << " col=" << col << endl;
 #endif                        
+                        }
                         break;
                     case MAZE_OPEN:
-                        m_maze[row][col].processed = false;
-                        m_maze[row][col].best_score_value = INT_MAX;
-                        m_maze[row][col].best_score_direction[DIRECTION_UP] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_DOWN] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_LEFT] = false;
-                        m_maze[row][col].best_score_direction[DIRECTION_RIGHT] = false;
+                        m_maze[dir][row][col].processed = false;
+                        m_maze[dir][row][col].best_score_value = INT_MAX;
                         break;
+                    }
                 }
             }
         }
@@ -111,34 +115,37 @@ namespace Day16
         {
             for (int col=0; col<m_cols; col++)
             {
-                if (m_maze[row][col].best_seat == true)
+                if ((m_maze[0][row][col].best_seat == true) ||
+                    (m_maze[1][row][col].best_seat == true) ||
+                    (m_maze[2][row][col].best_seat == true) ||
+                    (m_maze[3][row][col].best_seat == true))
                 {
                     cout << MAZE_BEST;
                 }
                 else
                 {
-                    switch (m_maze[row][col].symbol)
+                    switch (m_maze[0][row][col].symbol)
                     {
                         case MAZE_WALL:
                         case MAZE_START:
                         case MAZE_END:
-                            cout << m_maze[row][col].symbol;
+                            cout << m_maze[0][row][col].symbol;
                             break;
                         case MAZE_OPEN:
                             ch = MAZE_OPEN;
-                            if (m_maze[row][col].best_score_direction[DIRECTION_UP] == true)
+                            if (m_maze[DIRECTION_UP][row][col].best_score_value != INT_MAX)
                             {
                                 ch = MAZE_UP;
                             }
-                            if (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true)
+                            if (m_maze[DIRECTION_DOWN][row][col].best_score_value != INT_MAX)
                             {
                                 ch = (ch == MAZE_OPEN ? MAZE_DOWN : MAZE_MULTI);
                             }
-                            if (m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true)
+                            if (m_maze[DIRECTION_LEFT][row][col].best_score_value != INT_MAX)
                             {
                                 ch = (ch == MAZE_OPEN ? MAZE_LEFT : MAZE_MULTI);
                             }
-                            if (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true)
+                            if (m_maze[DIRECTION_RIGHT][row][col].best_score_value != INT_MAX)
                             {
                                 ch = (ch == MAZE_OPEN ? MAZE_RIGHT : MAZE_MULTI);
                             }
@@ -152,262 +159,204 @@ namespace Day16
         cout << endl;
     }
     
-    bool Maze::find_next_cell(int & next_row, int & next_col)
+    bool Maze::find_next_cell(int & direction, int & next_row, int & next_col)
     {
-        int min_unprocessed_value = m_maze[m_end_row][m_end_col].best_score_value;
+        int min_unprocessed_value = INT_MAX;
+        for (int dir=0; dir<NUM_DIRECTIONS; dir++)
+        {
+            if (m_maze[dir][m_end_row][m_end_col].best_score_value < min_unprocessed_value)
+            {
+                min_unprocessed_value = m_maze[dir][m_end_row][m_end_col].best_score_value;
+            }
+        }
 #ifdef DEBUG_DAY_16
         cout << "Finding next cell. End cell has value " << min_unprocessed_value << endl;
 #endif        
         bool cell_found = false;
-        for (int row=0; row<m_rows; row++)
+        for (int dir=0; dir<NUM_DIRECTIONS; dir++)
         {
-            for (int col=0; col<m_cols; col++)
+            for (int row=0; row<m_rows; row++)
             {
-                if ((m_maze[row][col].processed == false) && (m_maze[row][col].best_score_value < min_unprocessed_value))
+                for (int col=0; col<m_cols; col++)
                 {
-                    cell_found = true;
-                    next_row = row;
-                    next_col = col;
-                    min_unprocessed_value = m_maze[row][col].best_score_value;
+                    if ((m_maze[dir][row][col].processed == false) && (m_maze[dir][row][col].best_score_value < min_unprocessed_value))
+                    {
+                        cell_found = true;
+                        direction = dir;
+                        next_row = row;
+                        next_col = col;
+                        min_unprocessed_value = m_maze[dir][row][col].best_score_value;
 #ifdef DEBUG_DAY_16
-                    cout << " Better cell found at row=" << row <<  " col=" << col << " with best score " << min_unprocessed_value << endl;
+                        cout << " Better cell found at dir=" << dir << " row=" << row <<  " col=" << col << " with best score " << min_unprocessed_value << endl;
 #endif        
+                    }
                 }
             }
         }
         return cell_found;
     }
     
-    void Maze::process_cell(int row, int col)
+    void Maze::process_cell(int dir, int row, int col)
     {
         // Test and input mazes have walls around the edges; can eliminate out of bounds checks when processing a cell
 #ifdef DEBUG_DAY_16
-        cout << "Processing cell row=" << row << " col=" << col 
-             << " with value " << m_maze[row][col].best_score_value << " facing: "
-             << (m_maze[row][col].best_score_direction[DIRECTION_UP] ? "up " : "")
-             << (m_maze[row][col].best_score_direction[DIRECTION_DOWN] ? "down " : "")
-             << (m_maze[row][col].best_score_direction[DIRECTION_LEFT] ? "left " : "")
-             << (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] ? "right " : "")
-             << endl;
+        cout << "Processing cell dir=" << dir << " row=" << row << " col=" << col 
+             << " with value " << m_maze[dir][row][col].best_score_value << endl;
 #endif
         int calculated_score;
+        int own_direction;
+        int ninety_directions[2];
+        int opposite_direction;
+        int own_row_offset = 0;
+        int own_col_offset = 0;
         
-        // check up
-        if (m_maze[row-1][col].processed == false)
+        switch (dir)
+        {
+            case DIRECTION_UP:
+                own_direction = DIRECTION_UP;
+                ninety_directions[0] = DIRECTION_LEFT;
+                ninety_directions[1] = DIRECTION_RIGHT;
+                opposite_direction = DIRECTION_DOWN;
+                own_row_offset = -1;
+                break;
+            case DIRECTION_DOWN:
+                own_direction = DIRECTION_DOWN;
+                ninety_directions[0] = DIRECTION_LEFT;
+                ninety_directions[1] = DIRECTION_RIGHT;
+                opposite_direction = DIRECTION_UP;
+                own_row_offset = 1;
+                break;
+            case DIRECTION_LEFT:
+                own_direction = DIRECTION_LEFT;
+                ninety_directions[0] = DIRECTION_UP;
+                ninety_directions[1] = DIRECTION_DOWN;
+                opposite_direction = DIRECTION_RIGHT;
+                own_col_offset = -1;
+                break;
+            case DIRECTION_RIGHT:
+                own_direction = DIRECTION_RIGHT;
+                ninety_directions[0] = DIRECTION_UP;
+                ninety_directions[1] = DIRECTION_DOWN;
+                opposite_direction = DIRECTION_LEFT;
+                own_col_offset = 1;
+                break;
+        }
+
+        // own direction
+        if (m_maze[own_direction][row+own_row_offset][col+own_col_offset].processed == false)
         {
 #ifdef DEBUG_DAY_16
-            cout << " Cell above at row=" << row-1 << " col=" << col << " is not processed and has best score " << m_maze[row][col-1].best_score_value << endl;
+            cout << " Cell at row=" << row+own_row_offset << " col=" << col+own_col_offset << " is not processed and has best score " << m_maze[dir][row+own_row_offset][col+own_col_offset].best_score_value << endl;
 #endif
-            if (m_maze[row][col].best_score_direction[DIRECTION_UP] == true)
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_FORWARD;
-            }
-            else if ((m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true) ||
-                     (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true))
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_TURN + SCORE_FORWARD;
-            }
-            else
-            {
-                cerr << "U-TURN DETECTED...Figure out your bug!!" << endl;
-                calculated_score = INT_MAX;
-            }
-            
-#ifdef DEBUG_DAY_16
-            cout << "  Calculated score is " << calculated_score << ". ";
-#endif
-            if (m_maze[row-1][col].best_score_value < calculated_score)
+            calculated_score = m_maze[own_direction][row][col].best_score_value + SCORE_FORWARD;
+            if (m_maze[own_direction][row+own_row_offset][col+own_col_offset].best_score_value < calculated_score)
             {
 #ifdef DEBUG_DAY_16
                 cout << "This is worse than the existing best score. Not using" << endl;
 #endif                
             }
-            else if (m_maze[row-1][col].best_score_value == calculated_score)
+            else if (m_maze[own_direction][row+own_row_offset][col+own_col_offset].best_score_value == calculated_score)
             {
-                m_maze[row-1][col].best_score_direction[DIRECTION_UP] = true;
 #ifdef DEBUG_DAY_16
-                cout << "This matches the existing best score. Adding up as a direction" << endl;
+                cout << "This matches the existing best score. No change" << endl;
 #endif
             }
             else
             {
-                m_maze[row-1][col].best_score_direction[DIRECTION_UP] = true;
-                m_maze[row-1][col].best_score_direction[DIRECTION_DOWN] = false;
-                m_maze[row-1][col].best_score_direction[DIRECTION_LEFT] = false;
-                m_maze[row-1][col].best_score_direction[DIRECTION_RIGHT] = false;
-                m_maze[row-1][col].best_score_value = calculated_score;
+                m_maze[own_direction][row+own_row_offset][col+own_col_offset].best_score_value = calculated_score;
 #ifdef DEBUG_DAY_16
-                cout << "This beats the existing best score. Setting new best score and only direction as up" << endl;
+                cout << "This beats the existing best score. Setting new best score." << endl;
 #endif                
+            }
+        }
+                
+        // turn ninety degrees
+        calculated_score = m_maze[dir][row][col].best_score_value + SCORE_TURN;
+        for (int i=0; i<2; i++)
+        {
+            if (m_maze[ninety_directions[i]][row][col].processed == false)
+            {
+#ifdef DEBUG_DAY_16
+                cout << " Turning ninety degrees to " << ninety_directions[i] << " at row=" << row << " col=" << col << " is not processed and has best score " << m_maze[ninety_directions[i]][row][col].best_score_value << endl;
+#endif                
+                if (m_maze[ninety_directions[i]][row][col].best_score_value < calculated_score)
+                {
+#ifdef DEBUG_DAY_16
+                    cout << "This is worse than the existing best score. Not using" << endl;
+#endif                
+                }
+                else if (m_maze[ninety_directions[i]][row][col].best_score_value == calculated_score)
+                {
+#ifdef DEBUG_DAY_16
+                    cout << "This matches the existing best score. No change" << endl;
+#endif
+                }
+                else
+                {
+                    m_maze[ninety_directions[i]][row][col].best_score_value = calculated_score;
+#ifdef DEBUG_DAY_16
+                    cout << "This beats the existing best score. Setting new best score." << endl;
+#endif                
+                }
             }
         }
 
-        // check down
-        if (m_maze[row+1][col].processed == false)
+        // turn opposite direction
+        calculated_score = m_maze[dir][row][col].best_score_value + SCORE_TURN + SCORE_TURN;
+        if (m_maze[opposite_direction][row][col].processed == false)
         {
 #ifdef DEBUG_DAY_16
-            cout << " Cell below at row=" << row+1 << " col=" << col << " is not processed and has best score " << m_maze[row][col-1].best_score_value << endl;
-#endif
-            if (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true)
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_FORWARD;
-            }
-            else if ((m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true) ||
-                     (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true))
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_TURN + SCORE_FORWARD;
-            }
-            else
-            {
-                cerr << "U-TURN DETECTED...Figure out your bug!!" << endl;
-                calculated_score = INT_MAX;
-            }
-            
-#ifdef DEBUG_DAY_16
-            cout << "  Calculated score is " << calculated_score << ". ";
-#endif
-            if (m_maze[row+1][col].best_score_value < calculated_score)
+            cout << " Turning opposite to " << opposite_direction << " at row=" << row << " col=" << col << " is not processed and has best score " << m_maze[DIRECTION_LEFT][row][col].best_score_value << endl;
+#endif                
+            if (m_maze[opposite_direction][row][col].best_score_value < calculated_score)
             {
 #ifdef DEBUG_DAY_16
                 cout << "This is worse than the existing best score. Not using" << endl;
 #endif                
             }
-            else if (m_maze[row+1][col].best_score_value == calculated_score)
+            else if (m_maze[opposite_direction][row][col].best_score_value == calculated_score)
             {
-                m_maze[row+1][col].best_score_direction[DIRECTION_DOWN] = true;
 #ifdef DEBUG_DAY_16
-                cout << "This matches the existing best score. Adding down as a direction" << endl;
+                cout << "This matches the existing best score. No change" << endl;
 #endif
             }
             else
             {
-                m_maze[row+1][col].best_score_direction[DIRECTION_UP] = false;
-                m_maze[row+1][col].best_score_direction[DIRECTION_DOWN] = true;
-                m_maze[row+1][col].best_score_direction[DIRECTION_LEFT] = false;
-                m_maze[row+1][col].best_score_direction[DIRECTION_RIGHT] = false;
-                m_maze[row+1][col].best_score_value = calculated_score;
+                m_maze[opposite_direction][row][col].best_score_value = calculated_score;
 #ifdef DEBUG_DAY_16
-                cout << "This beats the existing best score. Setting new best score and only direction as down" << endl;
+                cout << "This beats the existing best score. Setting new best score." << endl;
 #endif                
             }
         }
-
-        // check left
-        if (m_maze[row][col-1].processed == false)
-        {
-#ifdef DEBUG_DAY_16
-            cout << " Cell left at row=" << row << " col=" << col-1 << " is not processed and has best score " << m_maze[row][col-1].best_score_value << endl;
-#endif
-            if (m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true)
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_FORWARD;
-            }
-            else if ((m_maze[row][col].best_score_direction[DIRECTION_UP] == true) ||
-                     (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true))
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_TURN + SCORE_FORWARD;
-            }
-            else
-            {
-                cerr << "U-TURN DETECTED...Figure out your bug!!" << endl;
-                calculated_score = INT_MAX;
-            }
-            
-#ifdef DEBUG_DAY_16
-            cout << "  Calculated score is " << calculated_score << ". ";
-#endif
-            if (m_maze[row][col-1].best_score_value < calculated_score)
-            {
-#ifdef DEBUG_DAY_16
-                cout << "This is worse than the existing best score. Not using" << endl;
-#endif                
-            }
-            else if (m_maze[row][col-1].best_score_value == calculated_score)
-            {
-                m_maze[row][col-1].best_score_direction[DIRECTION_LEFT] = true;
-#ifdef DEBUG_DAY_16
-                cout << "This matches the existing best score. Adding left as a direction" << endl;
-#endif
-            }
-            else
-            {
-                m_maze[row][col-1].best_score_direction[DIRECTION_UP] = false;
-                m_maze[row][col-1].best_score_direction[DIRECTION_DOWN] = false;
-                m_maze[row][col-1].best_score_direction[DIRECTION_LEFT] = true;
-                m_maze[row][col-1].best_score_direction[DIRECTION_RIGHT] = false;
-                m_maze[row][col-1].best_score_value = calculated_score;
-#ifdef DEBUG_DAY_16
-                cout << "This beats the existing best score. Setting new best score and only direction as left" << endl;
-#endif                
-            }
-        }
-
-        // check right
-        if (m_maze[row][col+1].processed == false)
-        {
-#ifdef DEBUG_DAY_16
-            cout << " Cell right at row=" << row << " col=" << col+1 << " is not processed and has best score " << m_maze[row][col-1].best_score_value << endl;
-#endif
-            if (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true)
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_FORWARD;
-            }
-            else if ((m_maze[row][col].best_score_direction[DIRECTION_UP] == true) ||
-                     (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true))
-            {
-                calculated_score = m_maze[row][col].best_score_value + SCORE_TURN + SCORE_FORWARD;
-            }
-            else
-            {
-                cerr << "U-TURN DETECTED...Figure out your bug!!" << endl;
-                calculated_score = INT_MAX;
-            }
-            
-#ifdef DEBUG_DAY_16
-            cout << "  Calculated score is " << calculated_score << ". ";
-#endif
-            if (m_maze[row][col+1].best_score_value < calculated_score)
-            {
-#ifdef DEBUG_DAY_16
-                cout << "This is worse than the existing best score. Not using" << endl;
-#endif                
-            }
-            else if (m_maze[row][col+1].best_score_value == calculated_score)
-            {
-                m_maze[row][col+1].best_score_direction[DIRECTION_RIGHT] = true;
-#ifdef DEBUG_DAY_16
-                cout << "This matches the existing best score. Adding right as a direction" << endl;
-#endif
-            }
-            else
-            {
-                m_maze[row][col+1].best_score_direction[DIRECTION_UP] = false;
-                m_maze[row][col+1].best_score_direction[DIRECTION_DOWN] = false;
-                m_maze[row][col+1].best_score_direction[DIRECTION_LEFT] = false;
-                m_maze[row][col+1].best_score_direction[DIRECTION_RIGHT] = true;
-                m_maze[row][col+1].best_score_value = calculated_score;
-#ifdef DEBUG_DAY_16
-                cout << "This beats the existing best score. Setting new best score and only direction as right" << endl;
-#endif                
-            }
-        }
-        m_maze[row][col].processed = true;
+                
+        m_maze[dir][row][col].processed = true;
         return;
     }
     
     bool Maze::process_maze()
     {
-        int row, col;
-        while (find_next_cell(row, col) == true)
+        int dir, row, col;
+        while (find_next_cell(dir, row, col) == true)
         {
-            process_cell(row, col);
+            process_cell(dir, row, col);
         }
-        return m_maze[m_end_row][m_end_col].processed;
+        return (m_maze[0][m_end_row][m_end_col].processed || 
+                m_maze[1][m_end_row][m_end_col].processed || 
+                m_maze[2][m_end_row][m_end_col].processed || 
+                m_maze[3][m_end_row][m_end_col].processed);
     }
     
     int Maze::get_end_score()
     {
-        return m_maze[m_end_row][m_end_col].best_score_value;
+        int best = INT_MAX;
+        for (int dir=0; dir<NUM_DIRECTIONS; dir++)
+        {
+            if (m_maze[dir][m_end_row][m_end_col].best_score_value < best)
+            {
+                best = m_maze[dir][m_end_row][m_end_col].best_score_value;
+            }
+        }
+        return best;
     }
     
     int Maze::get_best_seats_count()
@@ -418,7 +367,10 @@ namespace Day16
         {
             for (int col=0; col<m_cols; col++)
             {
-                if (m_maze[row][col].best_seat == true)
+                if ((m_maze[0][row][col].best_seat == true) || 
+                    (m_maze[1][row][col].best_seat == true) || 
+                    (m_maze[2][row][col].best_seat == true) || 
+                    (m_maze[3][row][col].best_seat == true))
                 {
                     count++;
                 }

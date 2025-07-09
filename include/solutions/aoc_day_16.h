@@ -4,6 +4,7 @@
 #include "aoc_day.h"
 
 #define MAZE_MAX_LENGTH 142
+#define NUM_DIRECTIONS 4
 
 namespace Day16
 {
@@ -11,7 +12,6 @@ namespace Day16
     {
         char symbol;
         int best_score_value;
-        bool best_score_direction[4];
         bool processed;
         bool processed_best_seats;
         bool best_seat;
@@ -20,15 +20,15 @@ namespace Day16
     class Maze
     {
         private:
-            MazeCell m_maze[MAZE_MAX_LENGTH][MAZE_MAX_LENGTH];
+            MazeCell m_maze[NUM_DIRECTIONS][MAZE_MAX_LENGTH][MAZE_MAX_LENGTH];
             int m_rows;
             int m_cols;
             int m_end_row;
             int m_end_col;
             int m_start_row;
             int m_start_col;
-            bool find_next_cell(int & next_row, int & next_col);
-            void process_cell(int row, int col);
+            bool find_next_cell(int & direction, int & next_row, int & next_col);
+            void process_cell(int direction, int row, int col);
         public:
             Maze();
             ~Maze();
