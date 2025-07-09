@@ -21,6 +21,7 @@ using namespace Day16;
 #define MAZE_RIGHT '>'
 #define MAZE_LEFT '<'
 #define MAZE_MULTI '?'
+#define MAZE_BEST 'O'
 
 #define DIRECTION_UP 0
 #define DIRECTION_DOWN 1
@@ -48,11 +49,15 @@ namespace Day16
         m_cols = data[0].length();
         m_end_row = 0;
         m_end_col = 0;
+        m_start_row = 0;
+        m_end_row = 0;
         for (int row=0; row<m_rows; row++)
         {
             for (int col=0; col<m_cols; col++)
             {
                 m_maze[row][col].symbol = data[row][col];
+                m_maze[row][col].processed_best_seats = false;
+                m_maze[row][col].best_seat = false;
                 switch (m_maze[row][col].symbol)
                 {
                     case MAZE_WALL:
@@ -66,6 +71,8 @@ namespace Day16
                         m_maze[row][col].best_score_direction[DIRECTION_DOWN] = false;
                         m_maze[row][col].best_score_direction[DIRECTION_LEFT] = false;
                         m_maze[row][col].best_score_direction[DIRECTION_RIGHT] = true;
+                        m_start_row = row;
+                        m_start_col = col;
 #ifdef DEBUG_DAY_16
                         cout << "Start found at row=" << row << " col=" << col << endl;
 #endif                        
@@ -104,33 +111,40 @@ namespace Day16
         {
             for (int col=0; col<m_cols; col++)
             {
-                switch (m_maze[row][col].symbol)
+                if (m_maze[row][col].best_seat == true)
                 {
-                    case MAZE_WALL:
-                    case MAZE_START:
-                    case MAZE_END:
-                        cout << m_maze[row][col].symbol;
-                        break;
-                    case MAZE_OPEN:
-                        ch = MAZE_OPEN;
-                        if (m_maze[row][col].best_score_direction[DIRECTION_UP] == true)
-                        {
-                            ch = MAZE_UP;
-                        }
-                        if (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true)
-                        {
-                            ch = (ch == MAZE_OPEN ? MAZE_DOWN : MAZE_MULTI);
-                        }
-                        if (m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true)
-                        {
-                            ch = (ch == MAZE_OPEN ? MAZE_LEFT : MAZE_MULTI);
-                        }
-                        if (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true)
-                        {
-                            ch = (ch == MAZE_OPEN ? MAZE_RIGHT : MAZE_MULTI);
-                        }
-                        cout << ch;
-                        break;
+                    cout << MAZE_BEST;
+                }
+                else
+                {
+                    switch (m_maze[row][col].symbol)
+                    {
+                        case MAZE_WALL:
+                        case MAZE_START:
+                        case MAZE_END:
+                            cout << m_maze[row][col].symbol;
+                            break;
+                        case MAZE_OPEN:
+                            ch = MAZE_OPEN;
+                            if (m_maze[row][col].best_score_direction[DIRECTION_UP] == true)
+                            {
+                                ch = MAZE_UP;
+                            }
+                            if (m_maze[row][col].best_score_direction[DIRECTION_DOWN] == true)
+                            {
+                                ch = (ch == MAZE_OPEN ? MAZE_DOWN : MAZE_MULTI);
+                            }
+                            if (m_maze[row][col].best_score_direction[DIRECTION_LEFT] == true)
+                            {
+                                ch = (ch == MAZE_OPEN ? MAZE_LEFT : MAZE_MULTI);
+                            }
+                            if (m_maze[row][col].best_score_direction[DIRECTION_RIGHT] == true)
+                            {
+                                ch = (ch == MAZE_OPEN ? MAZE_RIGHT : MAZE_MULTI);
+                            }
+                            cout << ch;
+                            break;
+                    }
                 }
             }
             cout << endl;
@@ -395,6 +409,24 @@ namespace Day16
     {
         return m_maze[m_end_row][m_end_col].best_score_value;
     }
+    
+    int Maze::get_best_seats_count()
+    {
+        int count=0;
+        
+        for (int row=0; row<m_rows; row++)
+        {
+            for (int col=0; col<m_cols; col++)
+            {
+                if (m_maze[row][col].best_seat == true)
+                {
+                    count++;
+                }
+            }
+        }
+        
+        return count;
+    }
 }
 
 AocDay16::AocDay16():AocDay(16)
@@ -436,7 +468,13 @@ string AocDay16::part2(string filename, vector<string> extra_args)
 {
     vector<string> data = read_input(filename);
 
+    Maze maze;
+    
+    maze.load_maze(data);
+    maze.display_maze();
+    maze.process_maze();
+    maze.display_maze();
     ostringstream out;
-    out << "Day 16 - Part 2 not implemented";
+    out << maze.get_best_seats_count();
     return out.str();
 }

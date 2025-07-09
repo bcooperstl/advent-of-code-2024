@@ -13,6 +13,8 @@ namespace Day16
         int best_score_value;
         bool best_score_direction[4];
         bool processed;
+        bool processed_best_seats;
+        bool best_seat;
     };
     
     class Maze
@@ -23,6 +25,8 @@ namespace Day16
             int m_cols;
             int m_end_row;
             int m_end_col;
+            int m_start_row;
+            int m_start_col;
             bool find_next_cell(int & next_row, int & next_col);
             void process_cell(int row, int col);
         public:
@@ -32,6 +36,8 @@ namespace Day16
             void display_maze();
             bool process_maze();
             int get_end_score();
+            //bool process_best_seats();
+            int get_best_seats_count();
     };
 }
 
